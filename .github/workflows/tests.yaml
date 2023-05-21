@@ -1,0 +1,53 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  linux:
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+    
+    - name: Update version
+      run: sudo apt-get update
+    - name: Install Criterion
+      run: sudo apt-get install libcriterion-dev
+    - name: Install Additional libraries
+      run: sudo apt-get install libbsd-dev
+    - name: Build project
+      run: make
+    - name: Build unit tests/run_tests.sh
+      run: make unit_test_build
+    - name: Run unit test
+      run: sh tests/unit_tests/run_tests.sh
+
+  macos:
+
+    runs-on: macos-latest
+    timeout-minutes: 5
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+    
+    - name: Update version
+      run: brew update
+    - name: Install Criterion
+      run: brew install criterion
+    - name: Build project
+      run: make
+    - name: Build unit tests/run_tests.sh
+      run: make unit_test_build
+    - name: Run unit test
+      run: sh tests/unit_tests/run_tests.sh
