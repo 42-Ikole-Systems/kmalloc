@@ -1,5 +1,5 @@
 #include "libkm/io/printf.h"
-#include "{PROJECT_NAME}/{PROJECT_NAME}.h"
+#include "kmalloc/kmalloc.h"
 
 #include <criterion/criterion.h>
 

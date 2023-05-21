@@ -1,6 +1,6 @@
 
-#ifndef PROJECT_NAME_H
-# define PROJECT_NAME_H
+#ifndef kmalloc_H
+# define kmalloc_H
 
 #include <stdbool.h>
 
