@@ -1,5 +1,5 @@
 # ✔️ kmalloc
-An awesome description of your ✨ amazing ✨ C project!
+My own malloc implementation!
 
 # 📥 Installation
 ```bash
@@ -12,6 +12,10 @@ $ make -C kmalloc
 # Run the program!
 $ ./kmalloc/kmalloc
 ```
+
+# ℹ️ Sources and References
+- [jemalloc paper](https://people.freebsd.org/~jasone/jemalloc/bsdcan2006/jemalloc.pdf)
+- [jemalloc talk](https://www.youtube.com/watch?v=RcWp5vwGlYU&list=PLn0nrSd4xjjZoaFwsTnmS1UFj3ob7gf7s)
 
 # 🧡 Project tempalate
 This project was created from an awesome c project template created with ❤️ by [K1ngmar](https://github.com/K1ngmar).  
