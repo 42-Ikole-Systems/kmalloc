@@ -3,11 +3,8 @@
 # define kmalloc_H
 
 # include <stdbool.h>
-# include <ctype.h>
+# include <stddef.h>
 
-# ifdef __linux__
-    #include <stddef.h>
-# endif
 
 /*!
  * @brief allocates size bytes of memory and returns a pointer to the allocated memory.
