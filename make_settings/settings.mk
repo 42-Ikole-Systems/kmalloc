@@ -1,7 +1,8 @@
 ifndef SETTINGS_MK
 SETTINGS_MK = 1
 
-NAME	= kmalloc
+NAME	= libkmalloc.a
+LIBNAME = kmalloc
 
 CFLAGS	= -Wall -Wextra -Werror -O3
 IFLAGS	= $(addprefix -I, $(IDIR))

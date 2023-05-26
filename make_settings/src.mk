@@ -1,8 +1,10 @@
 ifndef SRC_MK
 SRC_MK = 1
 
-SRC := main.c \
-	   utility/some-file.c
+SRC := malloc.c \
+	   calloc.c \
+	   realloc.c \
+	   free.c
 
 LIBKM_LOCATION = libkm/
 LIBKM = $(LIBKM_LOCATION)libkm.a

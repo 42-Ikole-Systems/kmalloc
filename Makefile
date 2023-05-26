@@ -9,8 +9,8 @@ all: $(NAME)
 # Compilation
 
 $(NAME): $(LIBKM) $(OBJ)
-	@echo "$(COLOR_GREEN)Creating $(NAME) executable...$(COLOR_RESET)"
-	@$(CC) -o $@ $(OBJ) $(LIBKM_LIB) $(LFLAGS) $(CFLAGS)
+	@echo "$(COLOR_GREEN)Creating $(NAME) library...$(COLOR_RESET)"
+	@ar rcs $(NAME) $(OBJ)
 
 -include $(DEPENDENCIES)
 
@@ -48,7 +48,7 @@ re: fclean
 $(UNIT_DIR)/bin/%: $(UNIT_DIR)/%.c
 	@mkdir -p $(UNIT_DIR)/bin
 	@echo "$(COLOR_LBLUE)Compiling tests... $(COLOR_BLUE)$<$(COLOR_RESET)"
-	@$(CC) $(CFLAGS) $(IFLAGS) $< $(UNIT_OBJ) -o $@ -lcriterion $(LIBKM_LIB)
+	@$(CC) $(CFLAGS) $(IFLAGS) -l$(LIBNAME) $< -o $@ -lcriterion
 
 unit_test_build: $(NAME) $(UNIT_DIR) $(UNIT_BIN)
 
