@@ -17,9 +17,9 @@ void suiteteardown(void)
 	someVariable = NULL;
 }
 
-TestSuite(TestGroup, .init=suitesetup, .fini=suiteteardown);
+TestSuite(free_test, .init=suitesetup, .fini=suiteteardown);
 
-Test(TestGroup, some_test)
+Test(free_test, some_test)
 {
 	free(someVariable);
 	cr_expect(someVariable == NULL);

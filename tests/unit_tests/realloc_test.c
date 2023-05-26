@@ -17,9 +17,9 @@ void suiteteardown(void)
 	someVariable = NULL;
 }
 
-TestSuite(TestGroup, .init=suitesetup, .fini=suiteteardown);
+TestSuite(realloc_test, .init=suitesetup, .fini=suiteteardown);
 
-Test(TestGroup, some_test)
+Test(realloc_test, some_test)
 {
 	someVariable = km_realloc(NULL, 10);
 	cr_expect(someVariable == NULL);

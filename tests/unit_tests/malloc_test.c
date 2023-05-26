@@ -17,9 +17,9 @@ void suiteteardown(void)
 	someVariable = NULL;
 }
 
-TestSuite(TestGroup, .init=suitesetup, .fini=suiteteardown);
+TestSuite(malloc_test, .init=suitesetup, .fini=suiteteardown);
 
-Test(TestGroup, some_test)
+Test(malloc_test, some_test)
 {
 	someVariable = km_malloc(10);
 	cr_expect(someVariable == NULL);
