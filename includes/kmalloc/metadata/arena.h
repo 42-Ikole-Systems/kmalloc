@@ -16,6 +16,7 @@
 # define KMALLOC_ARENA_HEADER_H
 
 # include "kmalloc/metadata/metadata.h"
+# include "kmalloc/metadata/slab.h"
 
 # include <inttypes.h>
 
@@ -34,11 +35,10 @@ typedef enum
 typedef struct
 {
 	uint8_t __header_start : 8;
-	uint16_t sizeInPages : 16;
-	const kmalloc_metadata* metadata;
-	void* smallZones; /*! @brief points to the first zone for small allocations, its header will contain a pointer to the next zone */
-	void* largeZones; /*! @brief piont to the first zone for large allocations, its header will contain a pointer to the next zone */
-	void* nextFreePage; /*! @brief will be NULL when no more free pages are available*/
+	kmalloc_metadata* metadata;
+	slab_header* smallSlabs; /*! @brief points to the first slab for small allocations, its header will contain a pointer to the next slab */
+	slab_header* largeSlabs; /*! @brief piont to the first slab for large allocations, its header will contain a pointer to the next slab */
+	void* hugeAllocations; /*! @brief (map?) of huge allocations (not contained in a slab, has its own zone) */
 	uint8_t __header_end : 8;
 } arena_header;
 

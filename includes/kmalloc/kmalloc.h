@@ -5,7 +5,6 @@
 # include <stdbool.h>
 # include <stddef.h>
 
-
 /*!
  * @brief allocates size bytes of memory and returns a pointer to the allocated memory.
  * @param size

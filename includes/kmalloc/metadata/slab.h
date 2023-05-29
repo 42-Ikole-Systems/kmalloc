@@ -12,42 +12,77 @@
 /*                                                                              */
 /* **************************************************************************** */
 
-#ifndef KMALLOC_ALLOCATION_HEADER_H
-# define KMALLOC_ALLOCATION_HEADER_H
+#ifndef KMALLOC_SLAB_H
+# define KMALLOC_SLAB_H
+
+# include "kmalloc/metadata/metadata.h"
 
 # include <inttypes.h>
+
+# define KiB 1024
+# define MiB (KiB * KiB)
+
+/*!
+ * @brief small allocation minimum size in bytes
+*/
+# define SMALL_SLAB_ALLOCATION_MIN_SIZE 16
+
+/*!
+ * @brief small allocation maximum size in bytes
+*/
+# define SMALL_SLAB_ALLOCATION_MAX_SIZE (1 * KiB)
+
+/*!
+ * @brief size in bytes
+*/
+# define SMALL_SLAB_SIZE (16 * KiB)
+
+/*!
+ * @brief large allocation minimum size in bytes
+*/
+# define LARGE_SLAB_ALLOCATION_MIN_SIZE (1 * KiB)
+
+/*!
+ * @brief large allocation maximum size in bytes
+*/
+# define LARGE_SLAB_ALLOCATION_MAX_SIZE (64 * KiB)
+
+/*!
+ * @brief size in bytes
+*/
+# define LARGE_SLAB_SIZE (1 * MiB)
+
+/*!
+ * @brief -.
+*/
+# define SLAB_MAX_ALLOCATIONS 1024
+
+/*!
+ * @brief sizeof of bitfield in bytes
+*/
+# define __SLAB_MAX_ALLOCATIONS_BITFIELD_SIZE__ (SLAB_MAX_ALLOCATIONS / 8)
 
 /*!
  * @brief -.
  */
 typedef enum
 {
-	allocation_header_start = 0x01,
-	allocation_header_end = 0x02
-} allocation_header_boundries;
+	slab_header_start = 0x01,
+	slab_header_end = 0x02
+} slab_header_boundries;
 
 /*!
- * @brief header containing metadata of an allocation
+ * @brief header containing metadata of a slab
 */
 typedef struct
 {
 	uint8_t __header_start : 8;
-	uint16_t size : 16;
+	uint16_t sizeInPages : 16;
+    uint8_t allocations[__SLAB_MAX_ALLOCATIONS_BITFIELD_SIZE__]; /*! @brief bitfield specifying what regions are allcoated */
+    void* nextSlab;
 	uint8_t __header_end : 8;
-} allocation_header;
+} slab_header;
 
-/*!
- * @brief -.
- * @param addr
- * @param size
-*/
-void set_allocation_header(void* restrict addr, uint16_t size);
-
-/*!
- * @brief -.
- * @param addr
- * @return
-*/
-allocation_header get_allocation_header(void* restrict addr);
+# undef __SLAB_MAX_ALLOCATIONS_BITFIELD_SIZE__
 
 #endif

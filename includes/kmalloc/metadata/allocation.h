@@ -12,22 +12,42 @@
 /*                                                                              */
 /* **************************************************************************** */
 
-#ifndef KMALLOC_METADATA_H
-# define KMALLOC_METADATA_H
+#ifndef KMALLOC_ALLOCATION_H
+# define KMALLOC_ALLOCATION_H
 
 # include <inttypes.h>
 
 /*!
- * @brief malloc metadata
+ * @brief -.
+ */
+typedef enum
+{
+	allocation_header_start = 0x01,
+	allocation_header_end = 0x02
+} allocation_header_boundries;
+
+/*!
+ * @brief header containing metadata of an allocation
 */
 typedef struct
 {
-    const uint16_t pageSizeInBytes : 16;
-    const uint16_t chunkSizeInPages : 16;
-    uint64_t totalAllocations : 64;
-    uint64_t totalBytesAllocated : 64; /*! @brief amount of bytes allocted by process */
-    uint64_t totalBytesCapacity : 64; /*! @brief amount of bytes given to process by the kernel (includes preallocated bytes and internal/external-fragmentation) */
-} kmalloc_metadata;
+	uint8_t __header_start : 8;
+	uint16_t sizeInBytes : 16;
+	uint8_t __header_end : 8;
+} allocation_header;
 
+/*!
+ * @brief -.
+ * @param addr
+ * @param size
+*/
+void set_allocation_header(void* restrict addr, uint16_t size);
+
+/*!
+ * @brief -.
+ * @param addr
+ * @return
+*/
+allocation_header get_allocation_header(void* restrict addr);
 
 #endif
