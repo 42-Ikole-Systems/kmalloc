@@ -16,11 +16,10 @@ $ ./kmalloc/kmalloc
 
 # 🧠 Terminology
 - **Arena:** a self-contained indipendent memory allocator.
-- **Chunk:** 1024 contiguous pages (4MiB).
-- **Page run:** 1+ contiguous pages within a chunk.
 - **Region:** contiguous bytes that can be used for an allocation.
-- **Zone:** pre-allocated contiguous chunk(s) for small or large allocations.
-- **Slab:** a region that can accommodate a specific amount of objects of the same size. 
+- **Zone:** pre-allocated contiguous pages for small or large allocations.
+- **Page run:** 1+ contiguous pages within a zone.
+- **Slab:** a page run that can accommodate a specific amount of objects of the same size inside a zone.
 
 # ℹ️ Sources and References
 - [jemalloc paper](https://people.freebsd.org/~jasone/jemalloc/bsdcan2006/jemalloc.pdf)
