@@ -32,22 +32,22 @@ typedef enum
 typedef struct
 {
 	uint8_t __header_start : 8;
-	uint16_t sizeInBytes : 16;
+	uint64_t sizeInBytes : 48;
 	uint8_t __header_end : 8;
 } allocation_header;
 
 /*!
  * @brief -.
  * @param addr
- * @param size
+ * @param sizeInPages
 */
-void set_allocation_header(void* restrict addr, uint16_t size);
+void set_allocation_header(void* restrict addr, uint32_t sizeInBytes);
 
 /*!
  * @brief -.
  * @param addr
  * @return
 */
-allocation_header get_allocation_header(void* restrict addr);
+allocation_header* get_allocation_header(void* restrict addr);
 
 #endif

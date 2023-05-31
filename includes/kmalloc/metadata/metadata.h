@@ -29,5 +29,4 @@ typedef struct
     uint64_t totalBytesCapacity : 64; /*! @brief amount of bytes given to process by the kernel (includes preallocated bytes and internal/external-fragmentation) */
 } kmalloc_metadata;
 
-
 #endif

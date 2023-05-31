@@ -12,37 +12,40 @@
 /*                                                                              */
 /* **************************************************************************** */
 
-#ifndef KMALLOC_ARENA_HEADER_H
-# define KMALLOC_ARENA_HEADER_H
+#include "kmalloc/metadata/arena.h"
 
-# include "kmalloc/metadata/zone.h"
+#include <stddef.h>
+#include <assert.h>
 
-# include <inttypes.h>
-# include <stddef.h>
-
-/*!
- * @brief header containing metadata of an arena
-*/
-typedef struct
+void initialise_arena(kmalloc_arena* arena)
 {
-	zone_header* zones; /*! @brief points to the first zone, Null if not allocated. the zone will contain a pointer to the next zone */
-	void* hugeAllocations; /*! @brief (map?) of huge allocations (not contained in a slab, has its own zone) */
-	uint64_t capacity; /*! @brief capacity in bytes*/
-	uint64_t size; /*! @brief used size in bytes */
-} kmalloc_arena;
+    arena->zones = NULL;
+    arena->hugeAllocations = NULL;
+    arena->capacity = 0;
+    arena->size = 0;
+}
 
-/*!
- * @brief intialises an empty arena
- * @param arena
-*/
-void initialise_arena(kmalloc_arena* arena);
-
-/*!
- * @brief
- * @param arena
- * @param size
- * @return
-*/
-void* arena_allocate(kmalloc_arena* arena, size_t size);
-
-#endif
+void* arena_allocate(kmalloc_arena* arena, size_t size)
+{
+    void* allocation = NULL;
+    if (size <= KMALLOC_LARGE_SLAB_ALLOCATION_MAX_SIZE)
+    {
+        if (arena->zones == NULL)
+        {
+            arena->zones = create_new_zone();
+            if (arena->zones == NULL) {
+                return NULL;
+            }
+        }
+        allocation = zone_allocate(arena->zones);
+    }
+    else
+    {
+        // its a huge allocation
+    }
+    if (allocation) {
+        // how to do the capacity?
+        arena->size += size;
+    }
+    return allocation;
+}

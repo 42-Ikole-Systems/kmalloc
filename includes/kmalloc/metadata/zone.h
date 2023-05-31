@@ -12,79 +12,58 @@
 /*                                                                              */
 /* **************************************************************************** */
 
-#ifndef KMALLOC_SLAB_H
-# define KMALLOC_SLAB_H
+#ifndef KMALLOC_ZONE_H
+# define KMALLOC_ZONE_H
 
-# include "kmalloc/metadata/metadata.h"
+# include "kmalloc/metadata/slab.h"
 
 # include <inttypes.h>
 
 /*!
  * @brief in bytes
 */
-# define KiB 1024
+# define MiB KiB * KiB
 
 /*!
- * @brief small allocation minimum size in bytes
+ * @brief in bytes
 */
-# define KMALLOC_SMALL_SLAB_ALLOCATION_MIN_SIZE 16
-
-/*!
- * @brief small allocation maximum size in bytes
-*/
-# define KMALLOC_SMALL_SLAB_ALLOCATION_MAX_SIZE (1 * KiB)
-
-/*!
- * @brief size in bytes
-*/
-# define KMALLOC_SMALL_SLAB_SIZE (4 * KiB)
-
-/*!
- * @brief large allocation minimum size in bytes
-*/
-# define KMALLOC_LARGE_SLAB_ALLOCATION_MIN_SIZE (1 * KiB)
-
-/*!
- * @brief large allocation maximum size in bytes
-*/
-# define KMALLOC_LARGE_SLAB_ALLOCATION_MAX_SIZE (64 * KiB)
-
-/*!
- * @brief size in bytes
-*/
-# define KMALLOC_LARGE_SLAB_SIZE (256 * KiB)
-
-/*!
- * @brief -.
-*/
-# define KMALLOC_SLAB_MAX_ALLOCATIONS 256
-
-/*!
- * @brief sizeof of bitfield in bytes
-*/
-# define __SLAB_MAX_ALLOCATIONS_BITFIELD_SIZE__ (KMALLOC_SLAB_MAX_ALLOCATIONS / 8)
+# define KMALLOC_ZONE_SIZE (2 * MiB)
 
 /*!
  * @brief -.
  */
 typedef enum
 {
-	slab_header_start = 0x01,
-	slab_header_end = 0x02
-} slab_header_boundries;
+	zone_header_start = 0x01,
+	zone_header_end = 0x02
+} zone_header_boundries;
 
 /*!
- * @brief header containing metadata of a slab
+ * @brief header containing metadata of a zone
 */
 typedef struct
 {
 	uint8_t __header_start : 8;
-	uint16_t sizeInPages : 16;
-    uint8_t allocations[__SLAB_MAX_ALLOCATIONS_BITFIELD_SIZE__]; /*! @brief bitfield specifying what regions are allcoated */
-    void* nextSlab;
+	uint16_t capacityInPages : 16;
+    uint16_t freePages : 16; /*! @brief amount of pages not assigned to a slab */
+    void* nextFreePage;
+    slab_header* smallSlabs; /*! @brief header of first slab, NULL if none exist. Will contain pointer to next slab */
+    slab_header* largeSlabs; /*! @brief header of first slab, NULL if none exist. Will contain pointer to next slab */
 	uint8_t __header_end : 8;
-} slab_header;
+} zone_header;
 
-# undef __SLAB_MAX_ALLOCATIONS_BITFIELD_SIZE__
+/*!
+ * @brief -.
+ * @param addr
+ * @param capacityInPages
+*/
+void set_zone_header(void* restrict addr, uint16_t capacityInPages);
+
+/*!
+ * @brief -.
+ * @param addr
+ * @return
+*/
+zone_header* get_zone_header(void* restrict addr);
 
 #endif
