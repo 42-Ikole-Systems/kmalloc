@@ -13,6 +13,7 @@
 /* **************************************************************************** */
 
 #include "kmalloc/metadata/arena.h"
+#include "kmalloc/metadata/allocation.h"
 
 #include <stddef.h>
 #include <assert.h>
@@ -27,6 +28,11 @@ void initialise_arena(kmalloc_arena* arena)
 
 void* arena_allocate(kmalloc_arena* arena, size_t size)
 {
+    if (size + KMALLOC_ALLOCATION_HEADER_SIZE < size) {
+        return NULL; // allocation too big
+    }
+    size += KMALLOC_ALLOCATION_HEADER_SIZE;
+
     void* allocation = NULL;
     if (size <= KMALLOC_LARGE_SLAB_ALLOCATION_MAX_SIZE)
     {
@@ -37,7 +43,7 @@ void* arena_allocate(kmalloc_arena* arena, size_t size)
                 return NULL;
             }
         }
-        allocation = zone_allocate(arena->zones);
+        allocation = zone_allocate(arena->zones, size);
     }
     else
     {

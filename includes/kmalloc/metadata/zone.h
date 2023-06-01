@@ -30,6 +30,11 @@
 # define KMALLOC_ZONE_SIZE (2 * MiB)
 
 /*!
+ * @brief temporary define!!!!!
+*/
+# define KMALLOC_PAGE_SIZE 4096
+
+/*!
  * @brief -.
  */
 typedef enum
@@ -41,7 +46,7 @@ typedef enum
 /*!
  * @brief header containing metadata of a zone
 */
-typedef struct
+typedef struct s_zone_header
 {
 	uint8_t __header_start : 8;
 	uint16_t capacityInPages : 16;
@@ -49,21 +54,24 @@ typedef struct
     void* nextFreePage;
     slab_header* smallSlabs; /*! @brief header of first slab, NULL if none exist. Will contain pointer to next slab */
     slab_header* largeSlabs; /*! @brief header of first slab, NULL if none exist. Will contain pointer to next slab */
+	struct s_zone_header* nextZone;
 	uint8_t __header_end : 8;
 } zone_header;
 
 /*!
- * @brief -.
- * @param addr
- * @param capacityInPages
-*/
-void set_zone_header(void* restrict addr, uint16_t capacityInPages);
-
-/*!
- * @brief -.
- * @param addr
+ * @brief allocates space for a zone and intialises its header
  * @return
 */
-zone_header* get_zone_header(void* restrict addr);
+zone_header* create_new_zone();
+
+/*!
+ * @brief creates an allocation within a zone
+ * @param zone
+ * @param size in bytes
+ * @return
+ * 
+ * @note allocates a new zone if no space is available in the current
+*/
+void* zone_allocate(zone_header* zone, size_t size);
 
 #endif

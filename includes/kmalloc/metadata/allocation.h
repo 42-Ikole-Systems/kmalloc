@@ -36,6 +36,8 @@ typedef struct
 	uint8_t __header_end : 8;
 } allocation_header;
 
+#define KMALLOC_ALLOCATION_HEADER_SIZE sizeof(allocation_header)
+
 /*!
  * @brief -.
  * @param addr
