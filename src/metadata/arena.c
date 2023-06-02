@@ -28,13 +28,13 @@ void initialise_arena(kmalloc_arena* arena)
 
 void* arena_allocate(kmalloc_arena* arena, size_t size)
 {
-    if (size + KMALLOC_ALLOCATION_HEADER_SIZE < size) {
-        return NULL; // allocation too big
+    const size_t sizeWithHeader = get_allocation_size_with_header(size);
+    if (sizeWithHeader < size) {
+        return NULL;
     }
-    size += KMALLOC_ALLOCATION_HEADER_SIZE;
 
     void* allocation = NULL;
-    if (size <= KMALLOC_LARGE_SLAB_ALLOCATION_MAX_SIZE)
+    if (can_store_allocation_in_zone(sizeWithHeader))
     {
         if (arena->zones == NULL)
         {
@@ -43,7 +43,7 @@ void* arena_allocate(kmalloc_arena* arena, size_t size)
                 return NULL;
             }
         }
-        allocation = zone_allocate(arena->zones, size);
+        allocation = zone_allocate(arena->zones, sizeWithHeader);
     }
     else
     {

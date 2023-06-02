@@ -40,37 +40,42 @@ zone_header* create_new_zone()
 /*!
  * @brief
  * @param zone
- * @param size in bytes of object attempting to allocate
+ * @param sizeWithHeader in bytes of object attempting to allocate
 */
-static slab_header* get_slab(zone_header* zone, size_t size)
+static slab_header* get_slab(zone_header* zone, size_t sizeWithHeader)
 {
-    assert(size < KMALLOC_LARGE_SLAB_ALLOCATION_MAX_SIZE);
+    assert(sizeWithHeader <= KMALLOC_LARGE_SLAB_ALLOCATION_MAX_SIZE);
 
+    const slab_metadata slabMetadata = get_slab_metadata(sizeWithHeader);
     slab_header* slab = NULL;
-    size_t slabMinAllocationSize = 0;
-    if (size <= KMALLOC_SMALL_SLAB_ALLOCATION_MAX_SIZE) {
-        slab = zone->smallSlabs;
-        slabMinAllocationSize = KMALLOC_SMALL_SLAB_ALLOCATION_MIN_SIZE;
-    }
-    else {
-        slab = zone->largeSlabs;
-        slabMinAllocationSize = KMALLOC_LARGE_SLAB_ALLOCATION_MIN_SIZE;
-    }
-
-    size_t actualSizeInBytes = ((size_t)km_ceil((double)size / slabMinAllocationSize)) * slabMinAllocationSize;
+    
+    // get either large or small slab
     while (slab != NULL)
     {
-        if (slab->)
+
+        if (slab_has_space(slab, sizeWithHeader)) {
+            break ;
+        }
 
         slab = slab->nextSlab;
+    }
+
+    // maybe store previous so no looping twice..
+    if (slab == NULL) {
+        slab = create_new_slab();
     }
 
     return slab;
 }
 
-void* zone_allocate(zone_header* zone, size_t size)
+void* zone_allocate(zone_header* zone, size_t sizeWithHeader)
 {
     // check slab destination
     // check slab availability
     // possibly create new zone
+}
+
+bool can_store_allocation_in_zone(size_t sizeWithHeader)
+{
+    return (sizeWithHeader <= KMALLOC_LARGE_SLAB_ALLOCATION_MAX_SIZE);
 }

@@ -38,3 +38,12 @@ allocation_header get_allocation_header(void* restrict addr)
 
 	return header;
 }
+
+size_t get_allocation_size_with_header(size_t sizeRequested)
+{
+	if (sizeRequested + KMALLOC_ALLOCATION_HEADER_SIZE < sizeRequested) {
+        return 0; // allocation too big
+    }
+    sizeRequested += KMALLOC_ALLOCATION_HEADER_SIZE;
+	return sizeRequested;
+}

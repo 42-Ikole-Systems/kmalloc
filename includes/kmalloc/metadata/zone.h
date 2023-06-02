@@ -18,6 +18,7 @@
 # include "kmalloc/metadata/slab.h"
 
 # include <inttypes.h>
+# include <stdbool.h>
 
 /*!
  * @brief in bytes
@@ -67,11 +68,18 @@ zone_header* create_new_zone();
 /*!
  * @brief creates an allocation within a zone
  * @param zone
- * @param size in bytes
+ * @param sizeWithHeader in bytes
  * @return
  * 
  * @note allocates a new zone if no space is available in the current
 */
-void* zone_allocate(zone_header* zone, size_t size);
+void* zone_allocate(zone_header* zone, size_t sizeWithHeader);
+
+/*!
+ * @brief checks whether the allocation can be stored within a preallocated zone
+ * @param sizeWithHeader
+ * @return
+*/
+bool can_store_allocation_in_zone(size_t sizeWithHeader);
 
 #endif

@@ -52,4 +52,10 @@ void set_allocation_header(void* restrict addr, uint32_t sizeInBytes);
 */
 allocation_header* get_allocation_header(void* restrict addr);
 
+/*!
+ * @brief
+ * @return zero if the allocation is too big
+*/
+size_t get_allocation_size_with_header(size_t sizeRequested);
+
 #endif
