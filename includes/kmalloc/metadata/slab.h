@@ -16,9 +16,11 @@
 # define KMALLOC_SLAB_H
 
 # include "kmalloc/metadata/metadata.h"
+# include "kmalloc/metadata/zone.h"
 
 # include <inttypes.h>
 # include <stddef.h>
+# include <stdbool.h>
 
 /*!
  * @brief in bytes
@@ -88,11 +90,12 @@ slab_metadata get_small_slab_metadata();
 slab_metadata get_large_slab_metadata();
 
 /*!
- * @brief gets the metadata of the slab that will contain an allocation of size
+ * @brief gets the address of the right slab_header that where an allocation of sizeWithHeader will be stored
+ * @param zone
  * @param sizeWithHeader
  * @return
 */
-slab_metadata get_slab_metadata(size_t sizeWithHeader);
+slab_header** get_slab_head_from_zone(zone_header* zone, size_t sizeWithHeader);
 
 /*!
  * @brief gets the size the allocation will take up in memory (with padding and header)
@@ -115,15 +118,37 @@ typedef enum
 */
 typedef struct
 {
-	uint8_t		__header_start : 8;
-	uint16_t	sizeInPages : 16;
-    uint32_t	allocations[__SLAB_MAX_ALLOCATIONS_BITFIELD_SIZE__]; /*! @brief bitfield specifying what regions are allcoated */
-    void*		nextSlab;
-	uint8_t		__header_end : 8;
+	uint8_t			__header_start : 8;
+	uint16_t		sizeInPages : 16;
+    uint32_t		allocations[__SLAB_MAX_ALLOCATIONS_BITFIELD_SIZE__]; /*! @brief bitfield specifying what regions are allcoated */
+    slab_metadata	metadata;
+	void*			nextSlab;
+	uint8_t			__header_end : 8;
 } slab_header;
 
+/*!
+ * @brief creates a new slab within zone
+ * @param zone
+ * @param metadata
+ * @return
+*/
+slab_header* create_slab(zone_header* zone, slab_metadata metadata);
 
-void* slab_allocate(slab, actualSizeInbytes);
+/*!
+ * @brief creates an allocation in slab
+ * @param slab
+ * @param sizeWithHeader
+ * @return
+*/
+void* slab_allocate(slab_header* slab, size_t sizeWithHeader);
+
+/*!
+ * @brief gets the region in the slab with space for sizeWithHeader
+ * @param slab
+ * @param sizeWithHeader
+ * @return pointer to region where the allocation will fit, if not possible return NULL
+*/
+void* get_region_in_slab(const slab_header* slab, size_t sizeWithHeader, slab_metadata slabMetadata);
 
 # undef __SLAB_MAX_ALLOCATIONS_BITFIELD_SIZE__
 

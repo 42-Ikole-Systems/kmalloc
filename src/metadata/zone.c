@@ -38,31 +38,52 @@ zone_header* create_new_zone()
 }
 
 /*!
- * @brief
+ * @brief gets the slab where an allocation of sizeWithHeader will fit (creates new slab when necessary)
  * @param zone
  * @param sizeWithHeader in bytes of object attempting to allocate
+ * @return
 */
 static slab_header* get_slab(zone_header* zone, size_t sizeWithHeader)
 {
     assert(sizeWithHeader <= KMALLOC_LARGE_SLAB_ALLOCATION_MAX_SIZE);
 
     const slab_metadata slabMetadata = get_slab_metadata(sizeWithHeader);
-    slab_header* slab = NULL;
+    slab_header** slabHead = get_slab_head_from_zone(zone, sizeWithHeader);
     
-    // get either large or small slab
+    if (slabHead == NULL) {
+        return NULL; // should never happen
+    }
+
+    slab_header* slab = *slabHead;
+    slab_header* prev = NULL;
+    void* region;
     while (slab != NULL)
     {
-
-        if (slab_has_space(slab, sizeWithHeader)) {
-            break ;
+        region = get_region_in_slab(slab, sizeWithHeader, slabMetadata);
+        if (region != NULL) {
+            return slab;
         }
 
+        prev = slab;
         slab = slab->nextSlab;
     }
 
-    // maybe store previous so no looping twice..
-    if (slab == NULL) {
-        slab = create_new_slab();
+    // no slab of this type exists yet.
+    if (slab == NULL && prev == NULL)
+    {
+        *slabHead = create_new_slab(zone, slabMetadata);
+        if (*slabHead == NULL) {
+            return NULL;
+        }
+        slab = *slabHead;
+    }
+    else if (slab == NULL)
+    {
+        prev->nextSlab = create_new_slab(zone, slabMetadata);
+        if (prev->nextSlab == NULL) {
+            return NULL;
+        }
+        slab = prev->nextSlab;
     }
 
     return slab;
@@ -70,9 +91,24 @@ static slab_header* get_slab(zone_header* zone, size_t sizeWithHeader)
 
 void* zone_allocate(zone_header* zone, size_t sizeWithHeader)
 {
-    // check slab destination
-    // check slab availability
-    // possibly create new zone
+    slab_header* slab = NULL;
+    while (zone)
+    {
+        slab = get_slab(zone, sizeWithHeader);
+        if (slab != NULL) {
+            break ;
+        }
+
+        if (zone->nextZone == NULL) {
+            zone->nextZone = create_new_zone();
+        }
+        zone = zone->nextZone;
+    }
+    if (slab == NULL) {
+        return NULL;
+    }
+
+    return slab_allocate(slab, sizeWithHeader);
 }
 
 bool can_store_allocation_in_zone(size_t sizeWithHeader)
