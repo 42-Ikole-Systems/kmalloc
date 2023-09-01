@@ -102,7 +102,7 @@ slab_header** get_slab_head_from_zone(zone_header* zone, size_t sizeWithHeader);
  * @param sizeWithHeader
  * @return
 */
-size_t get_true_allocation_size(size_t sizeWithHeader);
+size_t get_true_allocation_size(size_t sizeWithHeader, slab_metadata slabMetadata);
 
 /*!
  * @brief -.

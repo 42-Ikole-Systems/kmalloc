@@ -36,8 +36,35 @@ slab_header** get_slab_head_from_zone(zone_header* zone, size_t sizeWithHeader)
 	}
 }
 
-slab_header* create_slab(zone_header* zone, slab_metadata metaData)
+slab_header* create_slab(zone_header* zoneHead, slab_metadata metaData)
 {
+	assert(zoneHead != NULL);
+
+	zone_header* zone = zoneHead;
+	zone_header* prev = NULL;
+	while (zone)
+	{
+		// TODO: if smaller than page division results in 0
+		if (zone->freePages <= metaData.sizeInBytes / KMALLOC_PAGE_SIZE) {
+			break ;
+		}
+		prev = zone;
+		zone = zone->nextZone;
+	}
+
+	slab_header** slabHead = get_slab_head_from_zone(zone, metaData.maxAllocaitonSize);
+	if (slabHead == NULL) {
+		return NULL;
+	}
+	slab_header* prev;
+	for (slab_header* slab = slabHead; slab; slab = slab->nextSlab)
+	{
+		prev = slab;
+	}
+	if (prev == NULL)
+	{
+		zone->nextFreePage // aaahhh
+	}
 
 }
 
@@ -45,15 +72,14 @@ void* get_region_in_slab(const slab_header* slab, size_t sizeWithHeader, slab_me
 {
 	const size_t consecutiveRegionsRequired = getSizeInRegions(sizeWithHeader, slabMetadata);
 	size_t consecutiveFreeRegions = 0;
-	uint32_t bitmask = 0;
 	const uint32_t bitsInBitmask = 32;
 
 	// we loop over all bits
 	for (uint32_t i = 0; i < sizeof(slab->allocations) * bitsInBitmask; i++)
 	{
 		// can be optimised by checking whole bytes or 4bytes at a time if they are full.
-		bitmask = 1 << (i % bitsInBitmask);
-		if (slab->allocations[i / bitsInBitmask] & bitmask) {
+		const uint32_t bitToCheck = 1 << (i % bitsInBitmask);
+		if (slab->allocations[i / bitsInBitmask] & bitToCheck) {
 			consecutiveFreeRegions++;
 		}
 		else {
