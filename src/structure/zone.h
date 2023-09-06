@@ -22,28 +22,29 @@
 /*!
  * @brief Information about allocation sizes and other metadata needed for a zone.
 */
-typedef struct zone_metadata
+typedef struct ZoneMetadata_s
 {
 	const uint32_t	minAllocationSizeInBytes; /*!< -. */
 	const uint32_t	maxAllocationSizeInBytes; /*!< -. */
 	const uint32_t	zoneSizeInPages; /*!< -. */
 	const uint32_t	bitfieldSize; /*!< -. */
-} zone_metadata;
+} ZoneMetadata;
 
-const extern zone_metadata smallAllocationZoneMetadata; /*!< -. */
-const extern zone_metadata mediumAllocationZoneMetadata; /*!< -. */
+const extern ZoneMetadata smallAllocationZoneMetadata; /*!< -. */
+const extern ZoneMetadata mediumAllocationZoneMetadata; /*!< -. */
 
 /*!
 * @brief Contains all metadata needed for a zone.
+* 		 [zone1] -> [zone2] -> [zone3]
 */
-typedef struct zone_header_s
+typedef struct ZoneHeader_s
 {
-	header_boundaries		start; /*!< Start of header. */
+	HeaderBoundaries		start; /*!< Start of header. */
 	uint16_t				capacityInPages : 16; /*!< -. */
 	uint16_t				sizeInPages : 16; /*!< -. */
-	const zone_metadata*	metadata; /*!< @brief -. */
-	struct zone_header_s*	nextZone; /*!< -. */
-	header_boundaries		end; /*!< @brief End of header. */
-} zone_header;
+	const ZoneMetadata*		metadata; /*!< @brief -. */
+	struct ZoneHeader_s*	nextZone; /*!< -. */
+	HeaderBoundaries		end; /*!< @brief End of header. */
+} ZoneHeader;
 
 #endif

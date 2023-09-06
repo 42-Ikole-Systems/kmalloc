@@ -20,11 +20,12 @@
 #include <inttypes.h>
 
 /*!
- * @brief 
+ * @brief -.
 */
 struct arena
 {
-	zone_header*	zones; /*!< @brief Points to the first zone, Null if no zones exist yet. */
+	ZoneHeader*		smallZones; /*!< @brief Points to the first zone, Null if no zones exist yet. */
+	ZoneHeader*		mediumZones; /*!< @brief Points to the first zone, Null if no zones exist yet. */
 	void*			huge_allocations; /*!< @brief (binary tree?) of huge allocations (not contained in zones). */
 	uint64_t		capacity; /*!< @brief Capacity in bytes. */
 	uint64_t		size; /*!< @brief Used size in bytes. */    

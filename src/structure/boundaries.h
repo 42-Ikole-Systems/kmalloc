@@ -18,12 +18,12 @@
 /*!
  * @brief Boundary values for headers.
 */
-typedef enum header_boundaries_s
+typedef enum HeaderBoundaries_s
 {
     header_boundary_zone_start,
     header_boundary_zone_end,
     header_boundary_slab_start,
     header_boundary_slab_end
-} header_boundaries;
+} HeaderBoundaries;
 
 #endif
