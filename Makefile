@@ -48,7 +48,7 @@ re: fclean
 $(UNIT_DIR)/bin/%: $(UNIT_DIR)/%.c
 	@mkdir -p $(UNIT_DIR)/bin
 	@echo "$(COLOR_LBLUE)Compiling tests... $(COLOR_BLUE)$<$(COLOR_RESET)"
-	@$(CC) $(CFLAGS) $(IFLAGS) -L. -l$(LIBNAME) $< -o $@ -lcriterion
+	@$(CC) $(CFLAGS) $(IFLAGS) $(UNIT_TEST_INCLUDES) -L. -l$(LIBNAME) $< -o $@ -lcriterion
 
 unit_test_build: $(NAME) $(UNIT_DIR) $(UNIT_BIN)
 

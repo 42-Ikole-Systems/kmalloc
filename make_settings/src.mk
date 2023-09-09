@@ -4,7 +4,9 @@ SRC_MK = 1
 SRC := malloc.c \
 	   calloc.c \
 	   realloc.c \
-	   free.c
+	   free.c \
+	   structure/arena.c \
+	   structure/zone.c
 
 LIBKM_LOCATION = libkm/
 LIBKM = $(LIBKM_LOCATION)libkm.a

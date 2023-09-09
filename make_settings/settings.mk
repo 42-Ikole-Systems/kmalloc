@@ -16,8 +16,9 @@ DEPENDENCIES := $(patsubst %.c,.obj/%.d,$(SRC))
 TEST_DIR = tests
 UNIT_DIR = $(TEST_DIR)/unit_tests
 
-UNIT_TESTS = $(wildcard $(UNIT_DIR)/*.c)
-UNIT_BIN = $(patsubst $(UNIT_DIR)/%.c, $(UNIT_DIR)/bin/%, $(UNIT_TESTS))
+UNIT_TESTS			= $(wildcard $(UNIT_DIR)/*.c)
+UNIT_BIN			= $(patsubst $(UNIT_DIR)/%.c, $(UNIT_DIR)/bin/%, $(UNIT_TESTS))
+UNIT_TEST_INCLUDES	= -Isrc 
 
 ifndef DEBUG
 	CFLAGS += -O3

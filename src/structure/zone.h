@@ -12,8 +12,8 @@
 /*                                                                              */
 /* **************************************************************************** */
 
-#ifndef KAMLLOC_ZONE_H
-#define KMALLOC_ZONE_H
+#ifndef KMALLOC_ZONE_H
+# define KMALLOC_ZONE_H
 
 #include "boundaries.h"
 
