@@ -18,6 +18,7 @@
 #include "boundaries.h"
 
 #include <inttypes.h>
+#include <stdbool.h>
 
 /*!
  * @brief Information about allocation sizes and other metadata needed for a zone.
@@ -51,5 +52,11 @@ typedef struct ZoneHeader_s
  * @return
 */
 ZoneHeader* create_zone(const ZoneMetadata* zoneMetadata);
+
+/*!
+ * @brief Deallocates and clears a zone.
+ * @param zone
+*/
+void destroy_zone(ZoneHeader* zone);
 
 #endif

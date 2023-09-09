@@ -19,6 +19,7 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <assert.h>
 
 #define BITS_IN_BYTE 8
 #define BITS_IN_INTEGER sizeof(int) / BITS_IN_BYTE
@@ -78,4 +79,16 @@ ZoneHeader* create_zone(const ZoneMetadata* zoneMetadata)
 	header->end = header_boundary_zone_end;
 
 	return data;
+}
+
+void destroy_zone(ZoneHeader* zone)
+{
+	const ZoneMetadata* zoneData = zone->metadata;
+	zone->start = 0;
+	zone->metadata = NULL;
+	zone->nextZone = NULL;
+	zone->end = 0;
+
+	int ret = munmap(zone, zoneData->zoneSizeInPages * PAGE_SIZE);
+	assert(ret != -1); // Can only fail if zone is an invalid address.
 }

@@ -49,3 +49,16 @@ Test(malloc_test, create_zone)
 	cr_expect_eq(zoneHeader->nextZone, NULL);
 	cr_expect_eq(zoneHeader->end, header_boundary_zone_end);
 }
+
+Test(malloc_test, destroy_zone, .signal=SIGSEGV)
+{
+	somePointer = (void*)create_zone(&g_smallAllocationZoneMetadata);
+	cr_expect(somePointer != NULL);
+	
+	ZoneHeader* zone = (ZoneHeader*)somePointer;
+	destroy_zone(zone);
+	cr_expect_eq(zone->start, 0); // should crash here
+	cr_expect_eq(zone->metadata, NULL);
+	cr_expect_eq(zone->nextZone, NULL);
+	cr_expect_eq(zone->end, 0);
+}
