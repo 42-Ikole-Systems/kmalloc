@@ -12,18 +12,33 @@
 /*                                                                              */
 /* **************************************************************************** */
 
-#ifndef KMALLOC_BOUNDARIES_H
-# define KMALLOC_BOUNDARIES_H
+#include "allocation.h"
 
-/*!
- * @brief Boundary values for headers.
-*/
-typedef enum HeaderBoundaries_s
+#include <libkm/memory.h>
+
+#include <stdlib.h>
+
+void* set_allocation_header(void* address, uint16_t sizeInBlocks)
 {
-	header_boundary_zone_start		 = 0x01,
-	header_boundary_zone_end		 = 0x02,
-	header_boundary_allocation_start = 0x03,
-	header_boundary_allocation_end	 = 0x04
-} HeaderBoundaries;
+	AllocationHeader* header = (AllocationHeader*)address;
+	header->start = header_boundary_allocation_start;
+	header->sizeInBlocks = sizeInBlocks;
+	header->end = header_boundary_allocation_end;
 
-#endif
+	return (address + sizeof(AllocationHeader));
+}
+
+AllocationHeader* get_allocation_header(void* allocationAddress)
+{
+	AllocationHeader* header = (AllocationHeader*)(allocationAddress - sizeof(AllocationHeader));
+
+	if (header->start != header_boundary_allocation_start || header->end != header_boundary_allocation_end) {
+		return NULL;
+	}
+	return header;
+}
+
+void remove_allocation_header(AllocationHeader* header)
+{
+	km_bzero(header, sizeof(AllocationHeader));
+}

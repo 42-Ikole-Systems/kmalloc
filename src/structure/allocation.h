@@ -12,18 +12,42 @@
 /*                                                                              */
 /* **************************************************************************** */
 
-#ifndef KMALLOC_BOUNDARIES_H
-# define KMALLOC_BOUNDARIES_H
+#ifndef KMALLOC_ALLOCATION_H
+# define KMALLOC_ALLOCATION_H
+
+# include "boundaries.h"
+
+# include <inttypes.h>
 
 /*!
- * @brief Boundary values for headers.
+ * @brief Header stored in front of each allocation.
 */
-typedef enum HeaderBoundaries_s
+typedef struct AllocationHeader_s
 {
-	header_boundary_zone_start		 = 0x01,
-	header_boundary_zone_end		 = 0x02,
-	header_boundary_allocation_start = 0x03,
-	header_boundary_allocation_end	 = 0x04
-} HeaderBoundaries;
+    HeaderBoundaries start : 8; /*!< -. */
+    uint16_t		 sizeInBlocks : 16; /*!< -. */
+    HeaderBoundaries end : 8; /*!< -. */
+} AllocationHeader;
+
+/*!
+ * @brief Sets allocation header at address.
+ * @param address
+ * @param sizeInBlocks Size of the allocation.
+ * @return the address of the allocation, address after the header.
+*/
+void* set_allocation_header(void* address, uint16_t sizeInBlocks);
+
+/*!
+ * @brief Gets allocation header.
+ * @param allocationAddress
+ * @return Null if it is not an allocation.
+*/
+AllocationHeader* get_allocation_header(void* allocationAddress);
+
+/*!
+ * @brief Invalidates allocation header.
+ * @param header
+*/
+void remove_allocation_header(AllocationHeader* header);
 
 #endif

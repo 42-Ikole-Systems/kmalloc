@@ -18,6 +18,7 @@ $ ./kmalloc/kmalloc
 - **Arena:** a self-contained indipendent memory allocator.
 - **Zone:** pre-allocated contiguous pages for small or large allocations.
 - **Region:** contiguous bytes that can be used for an allocation.
+- **Block:** an region of the smallest allocation size inside a zone.
 - **Page run:** 1+ contiguous pages within a zone.
 
 # ℹ️ Sources and References
