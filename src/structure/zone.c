@@ -68,11 +68,30 @@ void destroy_zone(ZoneHeader* zone)
 
 void* allocate_in_zone(ZoneHeader* zone, size_t allocationSizeInBytes)
 {
-	const uint16_t allocationSizeInBlocks = km_ceil((float)allocationSizeInBytes / (float)(zone->metadata->minAllocationSizeInBytes));
-	
-	for (size_t i = 0; i < zone->metadata->bitmapSize; i++)
-	{
+	// do something with allocation header.
 
+	const uint16_t allocationSizeInBlocks = km_ceil((float)allocationSizeInBytes / (float)(zone->metadata->minAllocationSizeInBytes));
+	const size_t bitmapSize = zone->metadata->bitmapSize;
+	
+	size_t consecutiveFreeBlocks = 0;
+	for (size_t i = 0; i < bitmapSize; i++)
+	{
+		// can be optimised by checking whole bytes or 4bytes at a time if they are full.
+		const uint32_t bitToCheck = 1 << (i % bitmapSize);
+		if (zone->blockBitmap[i / bitmapSize] & bitToCheck) {
+			consecutiveFreeBlocks++;
+		}
+		else {
+			consecutiveFreeBlocks = 0;
+		}
+		
+		if (consecutiveFreeBlocks == allocationSizeInBlocks)
+		{
+			const size_t firstBlockOfAllocation = i + 1 - allocationSizeInBlocks;
+			set_bitmap_occupied(zone, firstBlockOfAllocation)
+			// actually create allocation here.
+			return (void*)zone + sizeof(ZoneHeader) + (firstBlockOfAllocation * (zone->metadata->minAllocationSizeInBytes));
+		}
 	}
 
 	return NULL;
