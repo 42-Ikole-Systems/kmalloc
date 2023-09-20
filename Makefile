@@ -60,6 +60,9 @@ unit_test_build: $(NAME) $(UNIT_DIR) $(UNIT_BIN)
 unit_test: unit_test_build
 	@sh $(UNIT_DIR)/run_tests.sh
 
+test: $(NAME)
+	@$(CC) $(SIMPLE_TEST_SRC) $(CFLAGS) $(IFLAGS) $(UNIT_TEST_INCLUDES) -L$(LIBDIR) -l$(LIBNAME) -l$(LIBKM_NAME) -o simpleTest
+
 # Debugging
 debug: fclean
 	@echo "$(COLOR_YELLOW)Building $(NAME) debug... $(COLOR_RESET)"

@@ -9,6 +9,9 @@ SRC := malloc.c \
 	   structure/zone.c \
 	   structure/allocation.c
 
+
+SIMPLE_TEST_SRC := tests/simpleMain.c
+
 LIBKM_LOCATION = libkm/
 LIBKM = $(LIBKM_LOCATION)libkm.a
 LIBKM_NAME = km
