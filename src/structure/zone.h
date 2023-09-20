@@ -19,6 +19,7 @@
 #include "sizeInfo.h"
 
 #include <inttypes.h>
+#include <stddef.h>
 #include <stdbool.h>
 
 /*!
@@ -43,7 +44,7 @@ typedef struct ZoneHeader_s
 {
 	HeaderBoundaries		start; /*!< Start of header. */
 	const ZoneMetadata*		metadata; /*!< -. */
-	int						blockBitmap	[BLOCK_BITMAP_SIZE_INTEGERS]; /*!< @brief bitmap to store which blocks are occupied */
+	int						blockBitmap[BLOCK_BITMAP_SIZE_INTEGERS]; /*!< @brief bitmap to store which blocks are occupied */
 	struct ZoneHeader_s*	nextZone; /*!< -. */
 	HeaderBoundaries		end; /*!< @brief End of header. */
 } ZoneHeader;
@@ -60,5 +61,13 @@ ZoneHeader* create_zone(const ZoneMetadata* zoneMetadata);
  * @param zone
 */
 void destroy_zone(ZoneHeader* zone);
+
+/*!
+ * @brief creates an allocation in zone.
+ * @param zone
+ * @param allocationSizeInBytes
+ * @return Address of allocation, NULL if failed.
+*/
+void* allocate_in_zone(ZoneHeader* zone, size_t allocationSizeInBytes);
 
 #endif

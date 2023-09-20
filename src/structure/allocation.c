@@ -18,14 +18,12 @@
 
 #include <stdlib.h>
 
-void* set_allocation_header(void* address, uint16_t sizeInBlocks)
+void set_allocation_header(void* address, uint16_t sizeInBlocks)
 {
 	AllocationHeader* header = (AllocationHeader*)address;
 	header->start = header_boundary_allocation_start;
 	header->sizeInBlocks = sizeInBlocks;
 	header->end = header_boundary_allocation_end;
-
-	return (address + sizeof(AllocationHeader));
 }
 
 AllocationHeader* get_allocation_header(void* allocationAddress)

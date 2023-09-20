@@ -33,9 +33,8 @@ typedef struct AllocationHeader_s
  * @brief Sets allocation header at address.
  * @param address
  * @param sizeInBlocks Size of the allocation.
- * @return the address of the allocation, address after the header.
 */
-void* set_allocation_header(void* address, uint16_t sizeInBlocks);
+void set_allocation_header(void* address, uint16_t sizeInBlocks);
 
 /*!
  * @brief Gets allocation header.
