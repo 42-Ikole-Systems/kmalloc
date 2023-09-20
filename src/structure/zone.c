@@ -15,6 +15,7 @@
 #include "zone.h"
 
 #include <libkm/memory.h>
+#include <libkm/math.h>
 
 #include <sys/mman.h>
 #include <unistd.h>
@@ -25,14 +26,14 @@ const ZoneMetadata g_smallAllocationZoneMetadata = {
     .minAllocationSizeInBytes	= SMALL_ALLOCATION_MIN_ALLOCATION_SIZE_BYTES,
     .maxAllocationSizeInBytes	= SMALL_ALLOCATION_MAX_ALLOCATION_SIZE_BYTES,
     .zoneSizeInPages			= SMALL_ALLOCATION_ZONE_SIZE_PAGES,
-    .bitfieldSize				= ((SMALL_ALLOCATION_ZONE_SIZE_PAGES * PAGE_SIZE) / SMALL_ALLOCATION_MIN_ALLOCATION_SIZE_BYTES)
+    .bitmapSize					= SMALL_BLOCK_BITMAP_SIZE_BITS
 };
 
 const ZoneMetadata g_mediumAllocationZoneMetadata = {
 	.minAllocationSizeInBytes	= MEDIUM_ALLOCATION_MIN_ALLOCATION_SIZE_BYTES,
     .maxAllocationSizeInBytes	= MEDIUM_ALLOCATION_MAX_ALLOCATION_SIZE_BYTES,
     .zoneSizeInPages			= MEDIUM_ALLOCATION_ZONE_SIZE_PAGES,
-    .bitfieldSize				= ((MEDIUM_ALLOCATION_ZONE_SIZE_PAGES * PAGE_SIZE) / MEDIUM_ALLOCATION_MIN_ALLOCATION_SIZE_BYTES)
+    .bitmapSize					= MEDIUM_BLOCK_BITMAP_SIZE_BITS
 };
 
 ZoneHeader* create_zone(const ZoneMetadata* zoneMetadata)
@@ -67,7 +68,12 @@ void destroy_zone(ZoneHeader* zone)
 
 void* allocate_in_zone(ZoneHeader* zone, size_t allocationSizeInBytes)
 {
-	const uint16_t allocationSizeInBlocks = ceil((float)allocationSizeInBytes / (float)zone->metadata->minAllocationSizeInBytes);
+	const uint16_t allocationSizeInBlocks = km_ceil((float)allocationSizeInBytes / (float)(zone->metadata->minAllocationSizeInBytes));
+	
+	for (size_t i = 0; i < zone->metadata->bitmapSize; i++)
+	{
 
+	}
 
+	return NULL;
 }
