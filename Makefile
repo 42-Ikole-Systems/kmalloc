@@ -8,9 +8,9 @@ all: $(NAME)
 
 # Compilation
 
-$(NAME): $(LIBKM) $(OBJ)
+$(NAME): $(LIBDIR) $(LIBKM) $(OBJ)
 	@echo "$(COLOR_GREEN)Creating $(NAME) library...$(COLOR_RESET)"
-	@ar rcs $(NAME) $(OBJ)
+	@ar rcs $(LIBDIR)/$(NAME) $(OBJ)
 
 -include $(DEPENDENCIES)
 
@@ -21,6 +21,11 @@ $(OBJ): $(ODIR)/%.o: $(SDIR)/%.c
 
 $(LIBKM):
 	@$(MAKE) -C $(LIBKM_LOCATION)
+	@cp $(LIBKM) $(LIBDIR)/
+
+$(LIBDIR):
+	@echo "creating build folder."
+	@mkdir $(LIBDIR)
 
 # Clean up
 
@@ -40,7 +45,7 @@ fclean: clean
 	@printf "$(COLOR_RESET)"
 
 re: fclean
-	@$(MAKE) re -C $(LIBKM_LOCATION)
+	@$(MAKE) fclean -C $(LIBKM_LOCATION)
 	@$(MAKE) all
 
 # Unit tests
@@ -48,7 +53,7 @@ re: fclean
 $(UNIT_DIR)/bin/%: $(UNIT_DIR)/%.c
 	@mkdir -p $(UNIT_DIR)/bin
 	@echo "$(COLOR_LBLUE)Compiling tests... $(COLOR_BLUE)$<$(COLOR_RESET)"
-	@$(CC) $(CFLAGS) $(IFLAGS) $(UNIT_TEST_INCLUDES) -L. -l$(LIBNAME) $< -o $@ -lcriterion
+	@$(CC) $(CFLAGS) $(IFLAGS) $(UNIT_TEST_INCLUDES) -L$(LIBDIR) -l$(LIBNAME) -l$(LIBKM_NAME) $< -o $@ -lcriterion
 
 unit_test_build: $(NAME) $(UNIT_DIR) $(UNIT_BIN)
 

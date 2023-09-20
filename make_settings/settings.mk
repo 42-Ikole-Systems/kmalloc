@@ -3,6 +3,7 @@ SETTINGS_MK = 1
 
 NAME	= libkmalloc.a
 LIBNAME = kmalloc
+LIBDIR	= libs
 
 CFLAGS	= -Wall -Wextra -Werror
 IFLAGS	= $(addprefix -I, $(IDIR))

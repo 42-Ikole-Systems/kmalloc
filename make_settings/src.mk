@@ -6,10 +6,11 @@ SRC := malloc.c \
 	   realloc.c \
 	   free.c \
 	   structure/arena.c \
-	   structure/zone.c
+	   structure/zone.c \
+	   structure/allocation.c
 
 LIBKM_LOCATION = libkm/
 LIBKM = $(LIBKM_LOCATION)libkm.a
-LIBKM_LIB = -L$(LIBKM_LOCATION) -lkm
+LIBKM_NAME = km
 
 endif
