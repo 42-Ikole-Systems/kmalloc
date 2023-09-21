@@ -40,7 +40,7 @@ fclean: clean
 	@echo "$(COLOR_YELLOW)force clean $(NAME)... $(COLOR_RESET)"
 	@$(MAKE) fclean -C $(LIBKM_LOCATION)
 	@printf "$(COLOR_RED)"
-	$(RM) $(NAME)
+	$(RM) $(NAME) $(SIMPLE_TEST_NAME)
 	$(RM) -rf $(UNIT_BIN)
 	@printf "$(COLOR_RESET)"
 
@@ -61,7 +61,7 @@ unit_test: unit_test_build
 	@sh $(UNIT_DIR)/run_tests.sh
 
 test: $(NAME)
-	@$(CC) $(SIMPLE_TEST_SRC) $(CFLAGS) $(IFLAGS) $(UNIT_TEST_INCLUDES) -L$(LIBDIR) -l$(LIBNAME) -l$(LIBKM_NAME) -o simpleTest
+	@$(CC) $(SIMPLE_TEST_SRC) $(CFLAGS) $(IFLAGS) $(UNIT_TEST_INCLUDES) -L$(LIBDIR) -l$(LIBNAME) -l$(LIBKM_NAME) -o $(SIMPLE_TEST_NAME)
 
 # Debugging
 debug: fclean

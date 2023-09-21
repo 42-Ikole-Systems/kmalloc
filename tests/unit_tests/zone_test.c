@@ -65,37 +65,43 @@ Test(zone_test, zone_bitmap_size)
 
 Test(zone_test, zone_allocation)
 {
+	// ==========================================================================================
+	// THESE FOLLOWING TESTS ARE BASED ON DEFAULT SETTINGS, IF THEY ARE CHANGED TESTS MIGHT FAIL.
+	// ==========================================================================================
+
 	someZone = create_zone(&g_smallAllocationZoneMetadata);
 	cr_expect_neq(someZone, NULL);
 	
-	// First bit is set for zone header.
-	uint32_t bitsSetInBitmap = 1; // 0001
+	// First bits is set to accomodate for zone header.
+	uint32_t bitsSetInBitmap = 0x0F; // 1111
 	cr_expect_eq(someZone->blockBitmap[0] & bitsSetInBitmap, bitsSetInBitmap);
 	
 	allocate_in_zone(someZone, 19);
-	bitsSetInBitmap = 7; // 0111
+	bitsSetInBitmap = 0x3F; // 0011-1111
 	cr_expect_eq(someZone->blockBitmap[0] & bitsSetInBitmap, bitsSetInBitmap);
 
 	allocate_in_zone(someZone, 5);
-	bitsSetInBitmap = 15; // 1111
+	bitsSetInBitmap = 0x7F; // 0111-1111
 	cr_expect_eq(someZone->blockBitmap[0] & bitsSetInBitmap, bitsSetInBitmap);
 
-	allocate_in_zone(someZone, 128); // [0] 0000-0000 0000-0000 0001-1111 1111-1111
-	bitsSetInBitmap = 0x00001FFF;
+	allocate_in_zone(someZone, 128); // [0] 0000-0000 0000-0000 1111-1111 1111-1111
+	bitsSetInBitmap = 0x0000FFFF;
 	cr_expect_eq(someZone->blockBitmap[0] & bitsSetInBitmap, bitsSetInBitmap);
 
-	allocate_in_zone(someZone, 128); // [0] 0000-0000 0011-1111 1111-1111 1111-1111
-	bitsSetInBitmap = 0x002FFFFF;
+	allocate_in_zone(someZone, 128); // [0] 0000-0001 1111-1111 1111-1111 1111-1111
+	bitsSetInBitmap = 0x01FFFFFF;
 	cr_expect_eq(someZone->blockBitmap[0] & bitsSetInBitmap, bitsSetInBitmap);
 
-	allocate_in_zone(someZone, 128); // [0] 0111-1111 1111-1111 1111-1111 1111-1111
-	bitsSetInBitmap = 0x7FFFFFFF;
-	cr_expect_eq(someZone->blockBitmap[0] & bitsSetInBitmap, bitsSetInBitmap);
-
-	allocate_in_zone(someZone, 128); // [0] 1111-1111 1111-1111 1111-1111 1111-1111 [1] 1111-1111
+	allocate_in_zone(someZone, 128); // [0] 1111-1111 1111-1111 1111-1111 1111-1111 [1] 0000-0011
 	bitsSetInBitmap = 0xFFFFFFFF;
 	cr_expect_eq(someZone->blockBitmap[0] & bitsSetInBitmap, bitsSetInBitmap);
-	bitsSetInBitmap = 0x000000FF;
+	bitsSetInBitmap = 0x00000003;
+	cr_expect_eq(someZone->blockBitmap[1] & bitsSetInBitmap, bitsSetInBitmap);
+
+	allocate_in_zone(someZone, 128); // [0] 1111-1111 1111-1111 1111-1111 1111-1111 [1] 0000-0111 1111-1111
+	bitsSetInBitmap = 0xFFFFFFFF;
+	cr_expect_eq(someZone->blockBitmap[0] & bitsSetInBitmap, bitsSetInBitmap);
+	bitsSetInBitmap = 0x000007FF;
 	cr_expect_eq(someZone->blockBitmap[1] & bitsSetInBitmap, bitsSetInBitmap);
 
 }

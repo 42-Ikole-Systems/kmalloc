@@ -37,39 +37,6 @@ const ZoneMetadata g_mediumAllocationZoneMetadata = {
     .bitmapSize					= MEDIUM_BLOCK_BITMAP_SIZE_BITS
 };
 
-ZoneHeader* create_zone(const ZoneMetadata* zoneMetadata)
-{
-	// MAP_ANON so its not associated with any file.
-	// MAP_PRIVATE so a forked process will not share the memory but gets a dupliate.
-	void* data = mmap(NULL, zoneMetadata->zoneSizeInPages * PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
-	if (data == (void*)-1) {
-		return NULL;
-	}
-
-	ZoneHeader* header = data;
-	header->start = header_boundary_zone_start;
-	header->metadata = zoneMetadata;
-	header->nextZone = NULL;
-	header->end = header_boundary_zone_end;
-
-	// create an allocation in the zone for the header.
-	allocate_in_zone(header, sizeof(ZoneHeader));
-
-	return data;
-}
-
-void destroy_zone(ZoneHeader* zone)
-{
-	const ZoneMetadata* zoneData = zone->metadata;
-	zone->start = 0;
-	zone->metadata = NULL;
-	zone->nextZone = NULL;
-	zone->end = 0;
-
-	int ret = munmap(zone, zoneData->zoneSizeInPages * PAGE_SIZE);
-	assert(ret != -1); // Can only fail if zone is an invalid address.
-}
-
 /*!
  * @brief Sets blocks as used in bitmap.
  * @param zone
@@ -87,11 +54,55 @@ static void set_bitmap_occupied(ZoneHeader* zone, size_t startingBlock, size_t a
 	}
 }
 
+/*!
+ * @brief Calculates the amount of blocks allocationSize will take up in the zone.
+ * @param zone
+ * @param allocationSizeInBytes
+ * @return
+*/
+static uint16_t get_allocation_size_in_blocks(const ZoneHeader* zone, size_t allocationSizeInBytes)
+{
+	return km_ceil((float)(allocationSizeInBytes + sizeof(AllocationHeader)) / (float)(zone->metadata->minAllocationSizeInBytes));
+}
+
+ZoneHeader* create_zone(const ZoneMetadata* zoneMetadata)
+{
+	// MAP_ANON so its not associated with any file.
+	// MAP_PRIVATE so a forked process will not share the memory but gets a dupliate.
+	void* data = mmap(NULL, zoneMetadata->zoneSizeInPages * PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+	if (data == (void*)-1) {
+		return NULL;
+	}
+
+	ZoneHeader* header = data;
+	header->start = header_boundary_zone_start;
+	header->metadata = zoneMetadata;
+	header->nextZone = NULL;
+	header->end = header_boundary_zone_end;
+
+	// Mark blocks as occupied in bitmap.
+	set_bitmap_occupied(header, 0, get_allocation_size_in_blocks(header, sizeof(ZoneHeader)));
+
+	return data;
+}
+
+void destroy_zone(ZoneHeader* zone)
+{
+	const ZoneMetadata* zoneData = zone->metadata;
+	zone->start = 0;
+	zone->metadata = NULL;
+	zone->nextZone = NULL;
+	zone->end = 0;
+
+	int ret = munmap(zone, zoneData->zoneSizeInPages * PAGE_SIZE);
+	assert(ret != -1); // Can only fail if zone is an invalid address.
+}
+
 void* allocate_in_zone(ZoneHeader* zone, size_t allocationSizeInBytes)
 {
 	assert(allocationSizeInBytes <= zone->metadata->maxAllocationSizeInBytes);
 
-	const uint16_t allocationSizeInBlocks = km_ceil((float)(allocationSizeInBytes + sizeof(AllocationHeader)) / (float)(zone->metadata->minAllocationSizeInBytes));
+	const uint16_t allocationSizeInBlocks = get_allocation_size_in_blocks(zone, allocationSizeInBytes);
 	const size_t bitmapSize = zone->metadata->bitmapSize;
 	
 	size_t consecutiveFreeBlocks = 0;
@@ -100,7 +111,7 @@ void* allocate_in_zone(ZoneHeader* zone, size_t allocationSizeInBytes)
 	{
 		// can be optimised by checking sizeof(int) bytes at a time if they are full.
 		const size_t bitToCheck = 1 << (i % bitmapSize);
-		if (zone->blockBitmap[i / bitmapSize] & bitToCheck) {
+		if (!(zone->blockBitmap[i / bitmapSize] & bitToCheck)) {
 			consecutiveFreeBlocks++;
 		}
 		else {
