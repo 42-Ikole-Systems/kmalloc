@@ -49,8 +49,8 @@ static void set_bitmap_occupied(ZoneHeader* zone, size_t startingBlock, size_t a
 
 	for (size_t i = startingBlock; i < bitmapSize && i < startingBlock + allocationSizeInBlocks; i++)
 	{
-		const size_t bitToMark = 1 << (i % bitmapSize);
-		zone->blockBitmap[i / bitmapSize] |= bitToMark;
+		const size_t bitToMark = 1 << (i % BITS_IN_INTEGER);
+		zone->blockBitmap[i / BITS_IN_INTEGER] |= bitToMark;
 	}
 }
 
@@ -104,14 +104,14 @@ void* allocate_in_zone(ZoneHeader* zone, size_t allocationSizeInBytes)
 
 	const uint16_t allocationSizeInBlocks = get_allocation_size_in_blocks(zone, allocationSizeInBytes);
 	const size_t bitmapSize = zone->metadata->bitmapSize;
-	
+
 	size_t consecutiveFreeBlocks = 0;
 	// we can start looking after the first block because it will always be taken for the ZoneHeader.
 	for (size_t i = 1; i < bitmapSize; i++)
 	{
 		// can be optimised by checking sizeof(int) bytes at a time if they are full.
-		const size_t bitToCheck = 1 << (i % bitmapSize);
-		if (!(zone->blockBitmap[i / bitmapSize] & bitToCheck)) {
+		const size_t bitToCheck = 1 << (i % BITS_IN_INTEGER);
+		if (!(zone->blockBitmap[i / BITS_IN_INTEGER] & bitToCheck)) {
 			consecutiveFreeBlocks++;
 		}
 		else {

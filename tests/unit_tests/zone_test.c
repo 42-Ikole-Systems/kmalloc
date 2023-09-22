@@ -75,30 +75,37 @@ Test(zone_test, zone_allocation)
 	// First bits is set to accomodate for zone header.
 	uint32_t bitsSetInBitmap = 0x0F; // 1111
 	cr_expect_eq(someZone->blockBitmap[0] & bitsSetInBitmap, bitsSetInBitmap);
-	
-	allocate_in_zone(someZone, 19);
+
+	void* ret;
+	ret = allocate_in_zone(someZone, 19);
+	cr_expect_neq(ret, NULL);
 	bitsSetInBitmap = 0x3F; // 0011-1111
 	cr_expect_eq(someZone->blockBitmap[0] & bitsSetInBitmap, bitsSetInBitmap);
 
-	allocate_in_zone(someZone, 5);
+	ret = allocate_in_zone(someZone, 5);
+	cr_expect_neq(ret, NULL);
 	bitsSetInBitmap = 0x7F; // 0111-1111
 	cr_expect_eq(someZone->blockBitmap[0] & bitsSetInBitmap, bitsSetInBitmap);
 
-	allocate_in_zone(someZone, 128); // [0] 0000-0000 0000-0000 1111-1111 1111-1111
+	ret = allocate_in_zone(someZone, 128); // [0] 0000-0000 0000-0000 1111-1111 1111-1111
+	cr_expect_neq(ret, NULL);
 	bitsSetInBitmap = 0x0000FFFF;
 	cr_expect_eq(someZone->blockBitmap[0] & bitsSetInBitmap, bitsSetInBitmap);
 
-	allocate_in_zone(someZone, 128); // [0] 0000-0001 1111-1111 1111-1111 1111-1111
+	ret = allocate_in_zone(someZone, 128); // [0] 0000-0001 1111-1111 1111-1111 1111-1111
+	cr_expect_neq(ret, NULL);
 	bitsSetInBitmap = 0x01FFFFFF;
 	cr_expect_eq(someZone->blockBitmap[0] & bitsSetInBitmap, bitsSetInBitmap);
 
-	allocate_in_zone(someZone, 128); // [0] 1111-1111 1111-1111 1111-1111 1111-1111 [1] 0000-0011
+	ret = allocate_in_zone(someZone, 128); // [0] 1111-1111 1111-1111 1111-1111 1111-1111 [1] 0000-0011
+	cr_expect_neq(ret, NULL);
 	bitsSetInBitmap = 0xFFFFFFFF;
 	cr_expect_eq(someZone->blockBitmap[0] & bitsSetInBitmap, bitsSetInBitmap);
 	bitsSetInBitmap = 0x00000003;
 	cr_expect_eq(someZone->blockBitmap[1] & bitsSetInBitmap, bitsSetInBitmap);
 
-	allocate_in_zone(someZone, 128); // [0] 1111-1111 1111-1111 1111-1111 1111-1111 [1] 0000-0111 1111-1111
+	ret = allocate_in_zone(someZone, 128); // [0] 1111-1111 1111-1111 1111-1111 1111-1111 [1] 0000-0111 1111-1111
+	cr_expect_neq(ret, NULL);
 	bitsSetInBitmap = 0xFFFFFFFF;
 	cr_expect_eq(someZone->blockBitmap[0] & bitsSetInBitmap, bitsSetInBitmap);
 	bitsSetInBitmap = 0x000007FF;

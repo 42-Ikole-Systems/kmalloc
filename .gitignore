@@ -60,4 +60,4 @@ dkms.conf
 bin
 libkmalloc.a
 libs/
-simpleTest
+simple_test
