@@ -33,8 +33,8 @@ typedef struct ZoneMetadata_s
 	const uint32_t	bitmapSize; /*!< Size of bitmap in bits. */
 } ZoneMetadata;
 
-const extern ZoneMetadata g_smallAllocationZoneMetadata; /*!< -. */
-const extern ZoneMetadata g_mediumAllocationZoneMetadata; /*!< -. */
+extern const ZoneMetadata g_smallAllocationZoneMetadata; /*!< -. */
+extern const ZoneMetadata g_mediumAllocationZoneMetadata; /*!< -. */
 
 /*!
 * @brief Contains all metadata needed for a zone.

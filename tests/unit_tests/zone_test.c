@@ -5,6 +5,8 @@
 
 #include <criterion/criterion.h>
 
+#include <signal.h>
+
 #define TEST_SIZE 1024
 
 ZoneHeader* someZone;

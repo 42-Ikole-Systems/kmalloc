@@ -21,6 +21,6 @@ TestSuite(free_test, .init=suitesetup, .fini=suiteteardown);
 
 Test(free_test, some_test)
 {
-	free(someVariable);
+	km_free(someVariable);
 	cr_expect(someVariable == NULL);
 }

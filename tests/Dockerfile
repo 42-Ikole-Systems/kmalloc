@@ -13,6 +13,9 @@
 
 # Dockerfile for testing on linux
 
+# docker build -t linux-test ./tests/
+# docker run --name linux-test-container -it -v ./:/kmalloc linux-test
+
 FROM ubuntu:latest
 
 RUN apt-get update

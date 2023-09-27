@@ -4,11 +4,11 @@ include $(SETTINGS_DIR)/src.mk
 include $(SETTINGS_DIR)/settings.mk
 include $(SETTINGS_DIR)/colors.mk
 
-all: $(NAME)
+all: $(LIBDIR)/$(NAME)
 
 # Compilation
 
-$(NAME): $(LIBDIR) $(LIBKM) $(OBJ)
+$(LIBDIR)/$(NAME): $(LIBDIR) $(LIBKM) $(OBJ)
 	@echo "$(COLOR_GREEN)Creating $(NAME) library...$(COLOR_RESET)"
 	@ar rcs $(LIBDIR)/$(NAME) $(OBJ)
 
@@ -30,18 +30,18 @@ $(LIBDIR):
 # Clean up
 
 clean:
-	@echo "$(COLOR_YELLOW)clean $(NAME)... $(COLOR_RESET)"
+	@echo "$(COLOR_YELLOW)cleaning $(NAME)... $(COLOR_RESET)"
 	@$(MAKE) clean -C $(LIBKM_LOCATION)
 	@printf "$(COLOR_RED)"
 	$(RM) -r $(ODIR)
 	@printf "$(COLOR_RESET)"
 
 fclean: clean
-	@echo "$(COLOR_YELLOW)force clean $(NAME)... $(COLOR_RESET)"
+	@echo "$(COLOR_YELLOW)force cleaning $(NAME)... $(COLOR_RESET)"
 	@$(MAKE) fclean -C $(LIBKM_LOCATION)
 	@printf "$(COLOR_RED)"
 	$(RM) $(NAME) $(SIMPLE_TEST_NAME)
-	$(RM) -rf $(UNIT_BIN)
+	$(RM) -rf $(UNIT_BIN) $(LIBDIR)
 	@printf "$(COLOR_RESET)"
 
 re: fclean
@@ -53,14 +53,14 @@ re: fclean
 $(UNIT_DIR)/bin/%: $(UNIT_DIR)/%.c
 	@mkdir -p $(UNIT_DIR)/bin
 	@echo "$(COLOR_LBLUE)Compiling tests... $(COLOR_BLUE)$<$(COLOR_RESET)"
-	@$(CC) $(CFLAGS) $(IFLAGS) $(UNIT_TEST_INCLUDES) -L$(LIBDIR) -l$(LIBNAME) -l$(LIBKM_NAME) $< -o $@ -lcriterion
+	@$(CC) $(CFLAGS) $(IFLAGS) $(UNIT_TEST_INCLUDES) $< -o $@ -lcriterion -L$(LIBDIR) -l$(LIBNAME) -l$(LIBKM_NAME)
 
-unit_test_build: $(NAME) $(UNIT_DIR) $(UNIT_BIN)
+unit_test_build: $(LIBDIR)/$(NAME) $(UNIT_DIR) $(UNIT_BIN)
 
 unit_test: unit_test_build
 	@sh $(UNIT_DIR)/run_tests.sh
 
-test: $(NAME)
+test: $(LIBDIR)/$(NAME)
 	@$(CC) $(SIMPLE_TEST_SRC) $(CFLAGS) $(IFLAGS) $(UNIT_TEST_INCLUDES) -L$(LIBDIR) -l$(LIBNAME) -l$(LIBKM_NAME) -o $(SIMPLE_TEST_NAME)
 
 # Debugging
