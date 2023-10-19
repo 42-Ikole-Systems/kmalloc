@@ -12,34 +12,31 @@
 /*                                                                              */
 /* **************************************************************************** */
 
-#ifndef KMALLOC_ARENA_HEADER_H
-# define KMALLOC_ARENA_HEADER_H
+#include "allocation.h"
 
-# include "kmalloc/metadata/metadata.h"
+#include <libkm/memory.h>
 
-# include <inttypes.h>
+#include <stdlib.h>
 
-/*!
- * @brief -.
- */
-typedef enum
+void set_allocation_header(void* address, uint16_t sizeInBlocks)
 {
-	arena_header_start = 0x01,
-	arena_header_end = 0x02
-} arena_header_boundries;
+	AllocationHeader* header = (AllocationHeader*)address;
+	header->start = header_boundary_allocation_start;
+	header->sizeInBlocks = sizeInBlocks;
+	header->end = header_boundary_allocation_end;
+}
 
-/*!
- * @brief header containing metadata of an arena
-*/
-typedef struct
+AllocationHeader* get_allocation_header(void* allocationAddress)
 {
-	uint8_t __header_start : 8;
-	uint16_t sizeInPages : 16;
-	const kmalloc_metadata* metadata;
-	void* smallZones; /*! @brief points to the first zone for small allocations, its header will contain a pointer to the next zone */
-	void* largeZones; /*! @brief piont to the first zone for large allocations, its header will contain a pointer to the next zone */
-	void* nextFreePage; /*! @brief will be NULL when no more free pages are available*/
-	uint8_t __header_end : 8;
-} arena_header;
+	AllocationHeader* header = (AllocationHeader*)(allocationAddress - sizeof(AllocationHeader));
 
-#endif
+	if (header->start != header_boundary_allocation_start || header->end != header_boundary_allocation_end) {
+		return NULL;
+	}
+	return header;
+}
+
+void remove_allocation_header(AllocationHeader* header)
+{
+	km_bzero(header, sizeof(AllocationHeader));
+}

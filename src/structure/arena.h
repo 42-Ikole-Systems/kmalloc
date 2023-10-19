@@ -12,42 +12,23 @@
 /*                                                                              */
 /* **************************************************************************** */
 
-#ifndef KMALLOC_ALLOCATION_HEADER_H
-# define KMALLOC_ALLOCATION_HEADER_H
+#ifndef KMALLOC_ARENA_H
+# define KMALLOC_ARENA_H
 
-# include <inttypes.h>
+#include "zone.h"
+
+#include <inttypes.h>
 
 /*!
  * @brief -.
- */
-typedef enum
+*/
+struct arena
 {
-	allocation_header_start = 0x01,
-	allocation_header_end = 0x02
-} allocation_header_boundries;
-
-/*!
- * @brief header containing metadata of an allocation
-*/
-typedef struct
-{
-	uint8_t __header_start : 8;
-	uint16_t size : 16;
-	uint8_t __header_end : 8;
-} allocation_header;
-
-/*!
- * @brief -.
- * @param addr
- * @param size
-*/
-void set_allocation_header(void* restrict addr, uint16_t size);
-
-/*!
- * @brief -.
- * @param addr
- * @return
-*/
-allocation_header get_allocation_header(void* restrict addr);
+	ZoneHeader*		smallZones; /*!< @brief Points to the first zone, Null if no zones exist yet. */
+	ZoneHeader*		mediumZones; /*!< @brief Points to the first zone, Null if no zones exist yet. */
+	void*			huge_allocations; /*!< @brief (binary tree?) of huge allocations (not contained in zones). */
+	uint64_t		capacity; /*!< @brief Capacity in bytes. */
+	uint64_t		size; /*!< @brief Used size in bytes. */    
+};
 
 #endif

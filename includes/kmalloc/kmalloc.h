@@ -1,10 +1,9 @@
 
-#ifndef kmalloc_H
-# define kmalloc_H
+#ifndef KMALLOC_H
+# define KMALLOC_H
 
 # include <stdbool.h>
 # include <stddef.h>
-
 
 /*!
  * @brief allocates size bytes of memory and returns a pointer to the allocated memory.

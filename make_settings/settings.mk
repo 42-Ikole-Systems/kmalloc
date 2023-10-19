@@ -3,8 +3,9 @@ SETTINGS_MK = 1
 
 NAME	= libkmalloc.a
 LIBNAME = kmalloc
+LIBDIR	= libs
 
-CFLAGS	= -Wall -Wextra -Werror -O3
+CFLAGS	= -Wall -Wextra -Werror
 IFLAGS	= $(addprefix -I, $(IDIR))
 
 SDIR	= src
@@ -16,11 +17,15 @@ DEPENDENCIES := $(patsubst %.c,.obj/%.d,$(SRC))
 TEST_DIR = tests
 UNIT_DIR = $(TEST_DIR)/unit_tests
 
-UNIT_TESTS = $(wildcard $(UNIT_DIR)/*.c)
-UNIT_BIN = $(patsubst $(UNIT_DIR)/%.c, $(UNIT_DIR)/bin/%, $(UNIT_TESTS))
+SIMPLE_TEST_NAME	= simple_test
+UNIT_TESTS			= $(wildcard $(UNIT_DIR)/*.c)
+UNIT_BIN			= $(patsubst $(UNIT_DIR)/%.c, $(UNIT_DIR)/bin/%, $(UNIT_TESTS))
+UNIT_TEST_INCLUDES	= -Isrc 
 
-ifdef DEBUG
-	CFLAGS += -g -D DEBUG
+ifndef DEBUG
+	CFLAGS += -O3
+else
+	CFLAGS += -Og -g -D DEBUG
 endif
 
 ifdef LEAKS

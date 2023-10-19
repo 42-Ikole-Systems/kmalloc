@@ -59,3 +59,5 @@ dkms.conf
 .obj
 bin
 libkmalloc.a
+libs/
+simpleTest

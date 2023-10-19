@@ -12,23 +12,41 @@
 /*                                                                              */
 /* **************************************************************************** */
 
-#ifndef KMALLOC_METADATA_H
-# define KMALLOC_METADATA_H
+#ifndef KMALLOC_ALLOCATION_H
+# define KMALLOC_ALLOCATION_H
 
-#include <inttypes.h>
+# include "boundaries.h"
+
+# include <inttypes.h>
 
 /*!
- * @brief malloc metadata
+ * @brief Header stored in front of each allocation.
 */
-typedef struct
+typedef struct AllocationHeader_s
 {
-    uint16_t pageSizeInBytes : 16;
-    uint16_t chunkSizeInPages : 16;
-    uint16_t smallAllocationSizeLimit : 16; /*! @brief allocation size in bytes */
-    uint16_t largeAllocaitonSizeLimit : 16; /*! @brief allocaiton size in bytes */
-    uint64_t totalAllocations;
-    uint64_t totalBytesAllocated;
-} kmalloc_metadata;
+    HeaderBoundaries start : 8; /*!< -. */
+    uint16_t		 sizeInBlocks : 16; /*!< -. */
+    HeaderBoundaries end : 8; /*!< -. */
+} AllocationHeader;
 
+/*!
+ * @brief Sets allocation header at address.
+ * @param address
+ * @param sizeInBlocks Size of the allocation.
+*/
+void set_allocation_header(void* address, uint16_t sizeInBlocks);
+
+/*!
+ * @brief Gets allocation header.
+ * @param allocationAddress
+ * @return Null if it is not an allocation.
+*/
+AllocationHeader* get_allocation_header(void* allocationAddress);
+
+/*!
+ * @brief Invalidates allocation header.
+ * @param header
+*/
+void remove_allocation_header(AllocationHeader* header);
 
 #endif

@@ -12,29 +12,5 @@
 /*                                                                              */
 /* **************************************************************************** */
 
-#include "kmalloc/metadata/allocation_headers.h"
+#include "arena.h"
 
-#include <libkm/memory.h>
-
-#include <assert.h>
-
-void set_allocation_header(void* restrict addr, uint16_t size)
-{
-	allocation_header header = {
-		.__header_start = allocation_header_start,
-		.size = size,
-		.__header_end = allocation_header_end
-	};
-	km_memcpy(addr, &header, sizeof(header));
-}
-
-allocation_header get_allocation_header(void* restrict addr)
-{
-	allocation_header header = *(allocation_header*)addr;
-
-	assert(header.__header_start == allocation_header_start);
-	assert(header.__header_end == allocation_header_end);
-	assert(header.size > 0);
-
-	return header;
-}
