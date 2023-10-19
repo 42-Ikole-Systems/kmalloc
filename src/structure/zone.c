@@ -80,7 +80,7 @@ ZoneHeader* create_zone(const ZoneMetadata* zoneMetadata)
 	header->nextZone = NULL;
 	header->end = header_boundary_zone_end;
 
-	// Mark blocks as occupied in bitmap.
+	// Mark blocks containing zoneHeader as occupied in bitmap.
 	set_bitmap_occupied(header, 0, get_allocation_size_in_blocks(header, sizeof(ZoneHeader)));
 
 	return data;
