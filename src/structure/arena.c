@@ -13,4 +13,13 @@
 /* **************************************************************************** */
 
 #include "arena.h"
+#include <unistd.h>
+#include <sys/types.h>
+
+size_t get_thread_arena_index(const size_t amountOfArenas)
+{
+	const pid_t threadId = gettid();
+	return threadId % amountOfArenas;
+}
+
 

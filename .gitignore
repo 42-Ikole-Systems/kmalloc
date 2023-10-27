@@ -61,3 +61,7 @@ bin
 libkmalloc.a
 libs/
 simpleTest
+
+# Generated files
+generated_kmalloc_metadata.h
+generate_metadata

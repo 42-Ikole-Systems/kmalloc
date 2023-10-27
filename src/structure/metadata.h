@@ -12,30 +12,9 @@
 /*                                                                              */
 /* **************************************************************************** */
 
-#ifndef KMALLOC_ARENA_H
-# define KMALLOC_ARENA_H
+#ifndef KMALLOC_METADATA_H
+# define KMALLOC_METADATA_H
 
-#include "zone.h"
-
-#include <inttypes.h>
-
-/*!
- * @brief -.
-*/
-struct Arena_s
-{
-	ZoneHeader*		smallZones; /*!< @brief Points to the first zone, Null if no zones exist yet. */
-	ZoneHeader*		mediumZones; /*!< @brief Points to the first zone, Null if no zones exist yet. */
-	void*			huge_allocations; /*!< @brief (binary tree?) of huge allocations (not contained in zones). */
-	uint64_t		capacity; /*!< @brief Capacity in bytes. */
-	uint64_t		size; /*!< @brief Used size in bytes. */    
-} Arena;
-
-/*!
- * @brief Gets the index for the arena assigned to the thread.
- * @param amountOfArenas -.
- * @returns
-*/
-size_t get_thread_arena_index(const size_t amountOfArenas);
+#include "pre_preprocessor/generated_kmalloc_metadata.h"
 
 #endif
