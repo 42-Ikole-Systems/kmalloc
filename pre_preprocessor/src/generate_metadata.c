@@ -26,7 +26,7 @@
 #include "libkm/io/printf.h"
 #include "libkm/string.h"
 
-#include <sys/sysinfo.h>
+#include <unistd.h>
 #include <stdbool.h>
 #include <assert.h>
 #include <fcntl.h>
@@ -43,7 +43,7 @@ static char* get_warning_message()
 */
 static char* get_number_of_cores_macro()
 {
-	const int numberOfCoresAvailable = get_nprocs();
+	const long numberOfCoresAvailable = sysconf(_SC_NPROCESSORS_CONF);
 	char* numberOfCoresDefineString = NULL;
 	assert(km_sprintf(&numberOfCoresDefineString, "#define KMALLOC_NUMBER_OF_CORES %d\n", numberOfCoresAvailable) != -1);
 	return numberOfCoresDefineString;

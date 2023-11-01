@@ -14,11 +14,17 @@
 
 #include "arena.h"
 #include <unistd.h>
-#include <sys/types.h>
+#include <pthread.h>
 
 size_t get_thread_arena_index(const size_t amountOfArenas)
 {
-	const pid_t threadId = gettid();
+#ifdef __LINUX__
+	const pthread_id_np_t threadId = pthread_getthreadid_np();
+#elif defined(__APPLE__)
+	uint64_t threadId;
+	pthread_threadid_np(NULL, &threadId);
+#endif
+
 	return threadId % amountOfArenas;
 }
 

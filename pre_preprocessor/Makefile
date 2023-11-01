@@ -19,8 +19,7 @@ LIBKM_NAME = km
 all: $(NAME)
 
 $(LIBKM):
-	@echo building libkm
-	@$(MAKE) -C $(LIBKM_LOCATION)
+	@$(MAKE) -C ../ libkm/libkm.a
 
 $(OBJ): $(ODIR)/%.o: $(SDIR)/%.c
 	@mkdir -p $(@D)

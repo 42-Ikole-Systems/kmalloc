@@ -8,7 +8,7 @@ all: $(LIBDIR)/$(NAME)
 
 # Compilation
 
-$(LIBDIR)/$(NAME): $(LIBDIR) $(LIBKM) $(OBJ)
+$(LIBDIR)/$(NAME): $(PRE_PREPROCESSOR_DEPENDENCY) $(LIBDIR) $(LIBKM) $(OBJ)
 	@echo "$(COLOR_GREEN)Creating $(NAME) library...$(COLOR_RESET)"
 	@ar rcs $(LIBDIR)/$(NAME) $(OBJ)
 
@@ -19,13 +19,16 @@ $(OBJ): $(ODIR)/%.o: $(SDIR)/%.c
 	@echo "$(COLOR_LBLUE)Compiling...	$(COLOR_BLUE)$<$(COLOR_RESET)"
 	@$(CC) -c -o $@ $< $(CFLAGS) -MMD -MP $(IFLAGS)
 
-$(LIBKM):
+$(LIBKM): $(LIBDIR)
 	@$(MAKE) -C $(LIBKM_LOCATION)
 	@cp $(LIBKM) $(LIBDIR)/
 
 $(LIBDIR):
 	@echo "creating build folder."
 	@mkdir $(LIBDIR)
+
+$(PRE_PREPROCESSOR_DEPENDENCY):
+	@$(MAKE) -C $(PRE_PREPROCESSOR_LOCATION)
 
 # Clean up
 

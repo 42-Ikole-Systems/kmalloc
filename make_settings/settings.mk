@@ -10,7 +10,7 @@ IFLAGS	= $(addprefix -I, $(IDIR))
 
 SDIR	= src
 ODIR	= .obj
-IDIR	= includes libkm/includes
+IDIR	= includes $(LIBKM_LOCATION)/includes $(PRE_PREPROCESSOR_INCLUDE)
 
 DEPENDENCIES := $(patsubst %.c,.obj/%.d,$(SRC))
 

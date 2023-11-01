@@ -15,4 +15,8 @@ LIBKM_LOCATION = libkm/
 LIBKM = $(LIBKM_LOCATION)libkm.a
 LIBKM_NAME = km
 
+PRE_PREPROCESSOR_LOCATION = pre_preprocessor/
+PRE_PREPROCESSOR_INCLUDE = $(PRE_PREPROCESSOR_LOCATION)/generated_includes
+PRE_PREPROCESSOR_DEPENDENCY = $(PRE_PREPROCESSOR_LOCATION)/pre_preprocessor/generated_kmalloc_metadata.h
+
 endif

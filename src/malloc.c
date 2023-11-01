@@ -20,7 +20,8 @@
 void* km_malloc(size_t size)
 {
 	// No need to initialize since statics will be zero initialised by default.
-	static Arena[8];
+	static Arena arenas[8];
+	(void)arenas;
 	(void)size;
 	return (NULL);
 }

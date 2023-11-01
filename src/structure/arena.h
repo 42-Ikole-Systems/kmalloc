@@ -22,7 +22,7 @@
 /*!
  * @brief -.
 */
-struct Arena_s
+typedef struct Arena_s
 {
 	ZoneHeader*		smallZones; /*!< @brief Points to the first zone, Null if no zones exist yet. */
 	ZoneHeader*		mediumZones; /*!< @brief Points to the first zone, Null if no zones exist yet. */
