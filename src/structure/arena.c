@@ -18,7 +18,7 @@
 
 size_t get_thread_arena_index(const size_t amountOfArenas)
 {
-#ifdef __LINUX__
+#ifdef __linux__
 	const pthread_id_np_t threadId = pthread_getthreadid_np();
 #elif defined(__APPLE__)
 	uint64_t threadId;
