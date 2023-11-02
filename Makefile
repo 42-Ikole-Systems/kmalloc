@@ -28,13 +28,14 @@ $(LIBDIR):
 	@mkdir $(LIBDIR)
 
 $(PRE_PREPROCESSOR_DEPENDENCY):
-	@$(MAKE) -C $(PRE_PREPROCESSOR_LOCATION)
+	@$(MAKE) run -C $(PRE_PREPROCESSOR_LOCATION)
 
 # Clean up
 
 clean:
 	@echo "$(COLOR_YELLOW)cleaning $(NAME)... $(COLOR_RESET)"
 	@$(MAKE) clean -C $(LIBKM_LOCATION)
+	@$(MAKE) clean -C $(PRE_PREPROCESSOR_LOCATION)
 	@printf "$(COLOR_RED)"
 	$(RM) -r $(ODIR)
 	@printf "$(COLOR_RESET)"
@@ -42,13 +43,13 @@ clean:
 fclean: clean
 	@echo "$(COLOR_YELLOW)force cleaning $(NAME)... $(COLOR_RESET)"
 	@$(MAKE) fclean -C $(LIBKM_LOCATION)
+	@$(MAKE) fclean -C $(PRE_PREPROCESSOR_LOCATION)
 	@printf "$(COLOR_RED)"
 	$(RM) $(NAME) $(SIMPLE_TEST_NAME)
 	$(RM) -rf $(UNIT_BIN) $(LIBDIR)
 	@printf "$(COLOR_RESET)"
 
 re: fclean
-	@$(MAKE) fclean -C $(LIBKM_LOCATION)
 	@$(MAKE) all
 
 # Unit tests

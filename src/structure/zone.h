@@ -63,6 +63,14 @@ ZoneHeader* create_zone(const ZoneMetadata* zoneMetadata);
 void destroy_zone(ZoneHeader* zone);
 
 /*!
+ * @brief Returns the index of the first block of where the allocation can fit.
+ * @param zone
+ * @param allocationSizeInBlocks
+ * @return 0 if allocation does not fit.
+*/
+size_t get_allocation_block_in_zone(const ZoneHeader* zone, size_t allocationSizeInBlocks);
+
+/*!
  * @brief creates an allocation in zone.
  * @param zone
  * @param allocationSizeInBytes

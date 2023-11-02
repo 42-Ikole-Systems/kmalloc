@@ -20,7 +20,7 @@
 #include <inttypes.h>
 
 /*!
- * @brief -.
+ * @brief Struct containing information about a single arena.
 */
 typedef struct Arena_s
 {
@@ -37,5 +37,13 @@ typedef struct Arena_s
  * @returns
 */
 size_t get_thread_arena_index(const size_t amountOfArenas);
+
+/*!
+ * @brief Creates an allocation within arena.
+ * @param arena
+ * @param numberOfBytes
+ * @return address of allocation.
+*/
+void* allocate_in_arena(Arena* arena, const size_t numberOfBytes);
 
 #endif
