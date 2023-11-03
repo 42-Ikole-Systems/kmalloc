@@ -72,10 +72,9 @@ size_t get_allocation_block_in_zone(const ZoneHeader* zone, size_t allocationSiz
 
 /*!
  * @brief creates an allocation in zone.
- * @param zone
- * @param allocationSizeInBytes
+ * @param allocation to be created.
  * @return Address of allocation, NULL if failed.
 */
-void* allocate_in_zone(ZoneHeader* zone, size_t allocationSizeInBytes);
+void* allocate_in_zone(const AllocationData allocation);
 
 #endif

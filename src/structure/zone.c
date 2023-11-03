@@ -111,12 +111,12 @@ size_t get_allocation_block_in_zone(const ZoneHeader* zone, size_t allocationSiz
 	return firstBlockOfAllocation;
 }
 
-void* allocate_in_zone(ZoneHeader* zone, size_t firstBlockOfAllocation, size_t allocationSizeInBlocks)
+void* allocate_in_zone(const AllocationData allocation)
 {
-	set_bitmap_occupied(zone, firstBlockOfAllocation, allocationSizeInBlocks);
+	set_bitmap_occupied(allocation.zone, allocation.firstBlockOfAllocation, allocation.allocationSizeInBlocks);
 
-	void* allocationAddress = (void*)zone + (firstBlockOfAllocation * (zone->metadata->minAllocationSizeInBytes));
-	set_allocation_header(allocationAddress, allocationSizeInBlocks);
+	void* allocationAddress = (void*)allocation.zone + (allocation.firstBlockOfAllocation * (allocation.zone->metadata->minAllocationSizeInBytes));
+	set_allocation_header(allocationAddress, allocation.allocationSizeInBlocks);
 
 	return allocationAddress + sizeof(AllocationHeader);
 }

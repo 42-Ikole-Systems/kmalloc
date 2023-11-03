@@ -42,13 +42,6 @@ static uint16_t get_allocation_size_in_blocks(const ZoneHeader* zone, size_t all
 	return km_ceil((float)(allocationSizeInBytes + sizeof(AllocationHeader)) / (float)(zone->metadata->minAllocationSizeInBytes));
 }
 
-typedef struct AllocationData_s
-{
-	ZoneHeader* zone;
-	size_t allocationStartBlock;
-	size_t allcoationSizeInBlocks;
-} AllocationData;
-
 AllocationData get_zone_for_allocation(const ZoneHeader* zoneHead, const size_t allocationSizeInBytes, const ZoneMetadata* zoneMetadata)
 {
 	const uint16_t allocationSizeInBlocks = get_allocation_size_in_blocks(zoneMetadata, allocationSizeInBytes);
@@ -56,10 +49,10 @@ AllocationData get_zone_for_allocation(const ZoneHeader* zoneHead, const size_t 
 
 	for (const ZoneHeader* zone = zoneHead; zone != NULL; zone = zone->nextZone)
 	{
-		const size_t allocationStartBlock = get_allocation_block_in_zone(zone, allocationSizeInBlocks);
-		if (allocationStartBlock != 0) {
+		const size_t firstBlockOfAllocation = get_allocation_block_in_zone(zone, allocationSizeInBlocks);
+		if (firstBlockOfAllocation != 0) {
 			allocationData.zone = zone;
-			allocationData.allocationStartBlock = allocationStartBlock;
+			allocationData.firstBlockOfAllocation = firstBlockOfAllocation;
 			break;
 		}
 	}
