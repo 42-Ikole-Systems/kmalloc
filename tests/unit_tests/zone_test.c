@@ -2,6 +2,7 @@
 #include "kmalloc/kmalloc.h"
 
 #include "structure/zone.h"
+#include "structure/arena.h"
 
 #include <criterion/criterion.h>
 
@@ -73,40 +74,46 @@ Test(zone_test, zone_allocation)
 
 	someZone = create_zone(&g_smallAllocationZoneMetadata);
 	cr_expect_neq(someZone, NULL);
-	
+
 	// First bits is set to accomodate for zone header.
 	uint32_t bitsSetInBitmap = 0x0F; // 1111
 	cr_expect_eq(someZone->blockBitmap[0] & bitsSetInBitmap, bitsSetInBitmap);
 
+	AllocationData allocationData = get_allocation_data(&someZone, 19, &g_smallAllocationZoneMetadata);
 	void* ret;
-	ret = allocate_in_zone(someZone, 19);
+	ret = allocate_in_zone(allocationData);
 	cr_expect_neq(ret, NULL);
 	bitsSetInBitmap = 0x3F; // 0011-1111
 	cr_expect_eq(someZone->blockBitmap[0] & bitsSetInBitmap, bitsSetInBitmap);
 
-	ret = allocate_in_zone(someZone, 5);
+	allocationData = get_allocation_data(&someZone, 5, &g_smallAllocationZoneMetadata);
+	ret = allocate_in_zone(allocationData);
 	cr_expect_neq(ret, NULL);
 	bitsSetInBitmap = 0x7F; // 0111-1111
 	cr_expect_eq(someZone->blockBitmap[0] & bitsSetInBitmap, bitsSetInBitmap);
 
-	ret = allocate_in_zone(someZone, 128); // [0] 0000-0000 0000-0000 1111-1111 1111-1111
+	allocationData = get_allocation_data(&someZone, 128, &g_smallAllocationZoneMetadata);
+	ret = allocate_in_zone(allocationData); // [0] 0000-0000 0000-0000 1111-1111 1111-1111
 	cr_expect_neq(ret, NULL);
 	bitsSetInBitmap = 0x0000FFFF;
 	cr_expect_eq(someZone->blockBitmap[0] & bitsSetInBitmap, bitsSetInBitmap);
 
-	ret = allocate_in_zone(someZone, 128); // [0] 0000-0001 1111-1111 1111-1111 1111-1111
+	allocationData = get_allocation_data(&someZone, 128, &g_smallAllocationZoneMetadata);
+	ret = allocate_in_zone(allocationData); // [0] 0000-0001 1111-1111 1111-1111 1111-1111
 	cr_expect_neq(ret, NULL);
 	bitsSetInBitmap = 0x01FFFFFF;
 	cr_expect_eq(someZone->blockBitmap[0] & bitsSetInBitmap, bitsSetInBitmap);
 
-	ret = allocate_in_zone(someZone, 128); // [0] 1111-1111 1111-1111 1111-1111 1111-1111 [1] 0000-0011
+	allocationData = get_allocation_data(&someZone, 128, &g_smallAllocationZoneMetadata);
+	ret = allocate_in_zone(allocationData); // [0] 1111-1111 1111-1111 1111-1111 1111-1111 [1] 0000-0011
 	cr_expect_neq(ret, NULL);
 	bitsSetInBitmap = 0xFFFFFFFF;
 	cr_expect_eq(someZone->blockBitmap[0] & bitsSetInBitmap, bitsSetInBitmap);
 	bitsSetInBitmap = 0x00000003;
 	cr_expect_eq(someZone->blockBitmap[1] & bitsSetInBitmap, bitsSetInBitmap);
 
-	ret = allocate_in_zone(someZone, 128); // [0] 1111-1111 1111-1111 1111-1111 1111-1111 [1] 0000-0111 1111-1111
+	allocationData = get_allocation_data(&someZone, 128, &g_smallAllocationZoneMetadata);
+	ret = allocate_in_zone(allocationData); // [0] 1111-1111 1111-1111 1111-1111 1111-1111 [1] 0000-0111 1111-1111
 	cr_expect_neq(ret, NULL);
 	bitsSetInBitmap = 0xFFFFFFFF;
 	cr_expect_eq(someZone->blockBitmap[0] & bitsSetInBitmap, bitsSetInBitmap);

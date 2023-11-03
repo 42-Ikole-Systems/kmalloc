@@ -37,6 +37,11 @@ const ZoneMetadata g_mediumAllocationZoneMetadata = {
     .bitmapSize					= MEDIUM_BLOCK_BITMAP_SIZE_BITS
 };
 
+uint16_t get_allocation_size_in_blocks(const ZoneMetadata* zoneMetadata, size_t allocationSizeInBytes)
+{
+	return km_ceil((float)(allocationSizeInBytes + sizeof(AllocationHeader)) / (float)(zoneMetadata->minAllocationSizeInBytes));
+}
+
 /*!
  * @brief Sets blocks as used in bitmap.
  * @param zone
@@ -70,7 +75,7 @@ ZoneHeader* create_zone(const ZoneMetadata* zoneMetadata)
 	header->end = header_boundary_zone_end;
 
 	// Mark blocks containing zoneHeader as occupied in bitmap.
-	set_bitmap_occupied(header, 0, get_allocation_size_in_blocks(header, sizeof(ZoneHeader)));
+	set_bitmap_occupied(header, 0, get_allocation_size_in_blocks(zoneMetadata, sizeof(ZoneHeader)));
 
 	return data;
 }

@@ -30,16 +30,6 @@ typedef struct AllocationHeader_s
 } AllocationHeader;
 
 /*!
- * @brief -.
-*/
-typedef struct AllocationData_s
-{
-	ZoneHeader* zone; /*!< -. */
-	size_t      firstBlockOfAllocation; /*!< Index inside the zone of the block where the allocation will start. */
-	size_t      allocationSizeInBlocks; /*!< -. */
-} AllocationData;
-
-/*!
  * @brief Sets allocation header at address.
  * @param address
  * @param sizeInBlocks Size of the allocation.

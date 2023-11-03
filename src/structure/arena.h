@@ -16,6 +16,7 @@
 # define KMALLOC_ARENA_H
 
 #include "zone.h"
+#include "allocation.h"
 
 #include <inttypes.h>
 
@@ -45,5 +46,15 @@ size_t get_thread_arena_index(const size_t amountOfArenas);
  * @return address of allocation.
 */
 void* allocate_in_arena(Arena* arena, const size_t numberOfBytes);
+
+/*!
+ * @brief Retrieves all information needed in orderd to create an allocation.
+ * @param zoneHead
+ * @param allocationSizeInBytes
+ * @param zoneMetadata
+ * @return
+*/
+AllocationData get_allocation_data(ZoneHeader** zoneHead, const size_t allocationSizeInBytes, const ZoneMetadata* zoneMetadata);
+
 
 #endif
