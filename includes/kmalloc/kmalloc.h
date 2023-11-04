@@ -5,6 +5,10 @@
 # include <stdbool.h>
 # include <stddef.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*!
  * @brief allocates size bytes of memory and returns a pointer to the allocated memory.
  * @param size
@@ -41,5 +45,9 @@ void* km_realloc(void* ptr, size_t size);
  * @return
 */
 void km_free(void* ptr);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
