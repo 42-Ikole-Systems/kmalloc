@@ -30,10 +30,15 @@ $(NAME): $(LIBKM) $(OBJ)
 	@echo Building metadata generator...
 	@$(CC) -o $(NAME) $(OBJ) -L$(LIBDIR) -l$(LIBKM_NAME)
 
-run: $(NAME)
+$(GENERATED_DIR):
 	@mkdir -p $(GENERATED_DIR)
+
+
+$(GENERATED_FILENAME): $(NAME) $(GENERATED_DIR)
 	@echo Generating $(GENERATED_FILENAME)
 	@./$(NAME)
+
+run: $(GENERATED_FILENAME)
 
 # Cleanup
 clean:
