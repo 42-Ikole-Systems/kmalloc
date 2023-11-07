@@ -4,11 +4,11 @@ include $(SETTINGS_DIR)/src.mk
 include $(SETTINGS_DIR)/settings.mk
 include $(SETTINGS_DIR)/colors.mk
 
-all: $(LIBDIR)/$(NAME)
+all: $(PRE_PREPROCESSOR_DEPENDENCY) $(LIBKM) $(LIBDIR)/$(NAME)
 
 # Compilation
 
-$(LIBDIR)/$(NAME): $(PRE_PREPROCESSOR_DEPENDENCY) $(LIBDIR) $(LIBKM) $(OBJ)
+$(LIBDIR)/$(NAME): $(LIBDIR) $(OBJ)
 	@echo "$(COLOR_GREEN)Creating $(NAME) library...$(COLOR_RESET)"
 	@ar rcs $(LIBDIR)/$(NAME) $(OBJ)
 
@@ -28,13 +28,14 @@ $(LIBDIR):
 	@mkdir $(LIBDIR)
 
 $(PRE_PREPROCESSOR_DEPENDENCY):
-	@$(MAKE) -C $(PRE_PREPROCESSOR_LOCATION)
+	@$(MAKE) run -C $(PRE_PREPROCESSOR_LOCATION)
 
 # Clean up
 
 clean:
 	@echo "$(COLOR_YELLOW)cleaning $(NAME)... $(COLOR_RESET)"
 	@$(MAKE) clean -C $(LIBKM_LOCATION)
+	@$(MAKE) clean -C $(PRE_PREPROCESSOR_LOCATION)
 	@printf "$(COLOR_RED)"
 	$(RM) -r $(ODIR)
 	@printf "$(COLOR_RESET)"
@@ -42,13 +43,13 @@ clean:
 fclean: clean
 	@echo "$(COLOR_YELLOW)force cleaning $(NAME)... $(COLOR_RESET)"
 	@$(MAKE) fclean -C $(LIBKM_LOCATION)
+	@$(MAKE) fclean -C $(PRE_PREPROCESSOR_LOCATION)
 	@printf "$(COLOR_RED)"
 	$(RM) $(NAME) $(SIMPLE_TEST_NAME)
 	$(RM) -rf $(UNIT_BIN) $(LIBDIR)
 	@printf "$(COLOR_RESET)"
 
 re: fclean
-	@$(MAKE) fclean -C $(LIBKM_LOCATION)
 	@$(MAKE) all
 
 # Unit tests
@@ -58,12 +59,12 @@ $(UNIT_DIR)/bin/%: $(UNIT_DIR)/%.c
 	@echo "$(COLOR_LBLUE)Compiling tests... $(COLOR_BLUE)$<$(COLOR_RESET)"
 	@$(CC) $(CFLAGS) $(IFLAGS) $(UNIT_TEST_INCLUDES) $< -o $@ -lcriterion -L$(LIBDIR) -l$(LIBNAME) -l$(LIBKM_NAME)
 
-unit_test_build: $(LIBDIR)/$(NAME) $(UNIT_DIR) $(UNIT_BIN)
+unit_test_build: all $(UNIT_DIR) $(UNIT_BIN)
 
 unit_test: unit_test_build
 	@sh $(UNIT_DIR)/run_tests.sh
 
-test: $(LIBDIR)/$(NAME)
+test: all
 	@$(CC) $(SIMPLE_TEST_SRC) $(CFLAGS) $(IFLAGS) $(UNIT_TEST_INCLUDES) -L$(LIBDIR) -l$(LIBNAME) -l$(LIBKM_NAME) -o $(SIMPLE_TEST_NAME)
 
 # Debugging
@@ -83,4 +84,4 @@ fsanitize: fclean
 	@$(MAKE) FSANITIZE=1
 
 # Phony
-.PHONY: debug fsanitize test clean fclean re
+.PHONY: debug fsanitize test clean fclean re $(LIBKM)

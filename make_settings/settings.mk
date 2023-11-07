@@ -5,7 +5,7 @@ NAME	= libkmalloc.a
 LIBNAME = kmalloc
 LIBDIR	= libs
 
-CFLAGS	= -Wall -Wextra -Werror
+CFLAGS	= -Wall -Wextra -Werror -fpie
 IFLAGS	= $(addprefix -I, $(IDIR))
 
 SDIR	= src

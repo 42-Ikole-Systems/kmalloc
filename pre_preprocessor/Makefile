@@ -19,7 +19,7 @@ LIBKM_NAME = km
 all: $(NAME)
 
 $(LIBKM):
-	@$(MAKE) -C ../ libkm/libkm.a
+	@$(MAKE) libkm/libkm.a -C ../
 
 $(OBJ): $(ODIR)/%.o: $(SDIR)/%.c
 	@mkdir -p $(@D)
@@ -30,10 +30,15 @@ $(NAME): $(LIBKM) $(OBJ)
 	@echo Building metadata generator...
 	@$(CC) -o $(NAME) $(OBJ) -L$(LIBDIR) -l$(LIBKM_NAME)
 
-run: $(NAME)
+$(GENERATED_DIR):
 	@mkdir -p $(GENERATED_DIR)
+
+
+$(GENERATED_FILENAME): $(NAME) $(GENERATED_DIR)
 	@echo Generating $(GENERATED_FILENAME)
 	@./$(NAME)
+
+run: $(GENERATED_FILENAME)
 
 # Cleanup
 clean:

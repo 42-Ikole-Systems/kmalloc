@@ -50,6 +50,16 @@ typedef struct ZoneHeader_s
 } ZoneHeader;
 
 /*!
+ * @brief -.
+*/
+typedef struct AllocationData_s
+{
+	ZoneHeader* zone; /*!< -. */
+	size_t      firstBlockOfAllocation; /*!< Index inside the zone of the block where the allocation will start. */
+	size_t      allocationSizeInBlocks; /*!< -. */
+} AllocationData;
+
+/*!
  * @brief Allocates memory from kernel and initialises the zoneheader.
  * @param zoneMetadata
  * @return
@@ -63,11 +73,27 @@ ZoneHeader* create_zone(const ZoneMetadata* zoneMetadata);
 void destroy_zone(ZoneHeader* zone);
 
 /*!
- * @brief creates an allocation in zone.
+ * @brief Returns the index of the first block of where the allocation can fit.
  * @param zone
- * @param allocationSizeInBytes
+ * @param allocationSizeInBlocks
+ * @return 0 if allocation does not fit.
+*/
+size_t get_allocation_block_in_zone(const ZoneHeader* zone, size_t allocationSizeInBlocks);
+
+/*!
+ * @brief creates an allocation in zone.
+ * @param allocation to be created.
  * @return Address of allocation, NULL if failed.
 */
-void* allocate_in_zone(ZoneHeader* zone, size_t allocationSizeInBytes);
+void* allocate_in_zone(const AllocationData allocation);
+
+/*!
+ * @brief Calculates the amount of blocks allocationSize will take up in the zone.
+ * @param zone
+ * @param allocationSizeInBytes
+ * @return
+*/
+uint16_t get_allocation_size_in_blocks(const ZoneMetadata* zoneMetadata, size_t allocationSizeInBytes);
+
 
 #endif

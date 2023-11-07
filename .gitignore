@@ -60,7 +60,7 @@ dkms.conf
 bin
 libkmalloc.a
 libs/
-simpleTest
+simple_test
 
 # Generated files
 generated_kmalloc_metadata.h
