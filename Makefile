@@ -46,7 +46,7 @@ fclean: clean
 	@$(MAKE) fclean -C $(PRE_PREPROCESSOR_LOCATION)
 	@printf "$(COLOR_RED)"
 	$(RM) $(NAME) $(SIMPLE_TEST_NAME)
-	$(RM) -rf $(UNIT_BIN) $(LIBDIR)
+	$(RM) -rf $(UNIT_BIN) $(LIBDIR) $(BENCH_BIN)
 	@printf "$(COLOR_RESET)"
 
 re: fclean
@@ -59,13 +59,28 @@ $(UNIT_DIR)/bin/%: $(UNIT_DIR)/%.c
 	@echo "$(COLOR_LBLUE)Compiling tests... $(COLOR_BLUE)$<$(COLOR_RESET)"
 	@$(CC) $(CFLAGS) $(IFLAGS) $(UNIT_TEST_INCLUDES) $< -o $@ -lcriterion -L$(LIBDIR) -l$(LIBNAME) -l$(LIBKM_NAME)
 
-unit_test_build: all $(UNIT_DIR) $(UNIT_BIN)
+unit_test_build: all $(UNIT_BIN)
 
 unit_test: unit_test_build
 	@sh $(UNIT_DIR)/run_tests.sh
 
+# Simple test
+
 test: all
 	@$(CC) $(SIMPLE_TEST_SRC) $(CFLAGS) $(IFLAGS) $(UNIT_TEST_INCLUDES) -L$(LIBDIR) -l$(LIBNAME) -l$(LIBKM_NAME) -o $(SIMPLE_TEST_NAME)
+
+# Bench mark
+
+$(BENCH_DIR)/bin/%: $(BENCH_DIR)/%.cpp
+	@mkdir -p $(BENCH_DIR)/bin
+	@echo "$(COLOR_LBLUE)Compiling benchmark... $(COLOR_BLUE)$<$(COLOR_RESET)"
+	@$(CXX) $(CFLAGS) $(BENCH_FLAGS) $(IFLAGS) $< -o $@ -L$(LIBDIR) -l$(LIBNAME) -l$(LIBKM_NAME)
+
+benchmark_build: all $(BENCH_BIN)
+	@echo $(BENCH_DIR)/*.cpp
+
+benchmark: benchmark_build
+	@sh $(BENCH_DIR)/run_benchmark.sh
 
 # Debugging
 debug: fclean
