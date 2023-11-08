@@ -65,3 +65,4 @@ simple_test
 # Generated files
 generated_kmalloc_metadata.h
 generate_metadata
+profiling
