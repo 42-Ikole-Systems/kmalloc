@@ -14,12 +14,12 @@
 
 #include "arena.h"
 #include "allocation.h"
+#include "../debug_assert.h"
 
 #include <libkm/math.h>
 
 #include <unistd.h>
 #include <pthread.h>
-#include <assert.h>
 
 #ifdef __linux__
 # include <sys/syscall.h>
@@ -57,7 +57,7 @@ static ZoneHeader* add_new_zone(ZoneHeader** zoneHead, ZoneHeader* previousZone,
 		previousZone->nextZone = newZone;
 	}
 	else {
-		assert(zoneHead != NULL);
+		D_ASSERT(zoneHead != NULL);
 		*zoneHead = newZone;
 	}
 	return newZone;
@@ -65,18 +65,21 @@ static ZoneHeader* add_new_zone(ZoneHeader** zoneHead, ZoneHeader* previousZone,
 
 AllocationData get_allocation_data(ZoneHeader** zoneHead, const size_t allocationSizeInBytes, const ZoneMetadata* zoneMetadata)
 {
-	assert(zoneHead != NULL);
+	D_ASSERT(zoneHead != NULL);
 	const uint16_t allocationSizeInBlocks = get_allocation_size_in_blocks(zoneMetadata, allocationSizeInBytes);
 	AllocationData allocationData = {NULL, 0, allocationSizeInBlocks};
 
 	ZoneHeader* previousZone = NULL;
 	for (ZoneHeader* zone = *zoneHead; zone != NULL; zone = zone->nextZone)
 	{
-		const size_t firstBlockOfAllocation = get_allocation_block_in_zone(zone, allocationSizeInBlocks);
-		if (firstBlockOfAllocation != 0) {
-			allocationData.zone = zone;
-			allocationData.firstBlockOfAllocation = firstBlockOfAllocation;
-			break;
+		if (zone->freeBlocks >= allocationSizeInBlocks)
+		{
+			const size_t firstBlockOfAllocation = get_allocation_block_in_zone(zone, allocationSizeInBlocks);
+			if (firstBlockOfAllocation != 0) {
+				allocationData.zone = zone;
+				allocationData.firstBlockOfAllocation = firstBlockOfAllocation;
+				break;
+			}
 		}
 		previousZone = zone;
 	}
@@ -88,7 +91,7 @@ AllocationData get_allocation_data(ZoneHeader** zoneHead, const size_t allocatio
 		if (newZone != NULL)
 		{
 			const size_t firstBlockOfAllocation = get_allocation_block_in_zone(newZone, allocationSizeInBlocks);
-			assert(firstBlockOfAllocation != 0);
+			D_ASSERT(firstBlockOfAllocation != 0);
 
 			allocationData.zone = newZone;
 			allocationData.firstBlockOfAllocation = firstBlockOfAllocation;
@@ -99,7 +102,7 @@ AllocationData get_allocation_data(ZoneHeader** zoneHead, const size_t allocatio
 
 void* allocate_in_arena(Arena* arena, const size_t allocationSizeInBytes)
 {
-	assert(arena != NULL);
+	D_ASSERT(arena != NULL);
 	AllocationData allocationData = {NULL, 0, 0};
 
 	if (allocationSizeInBytes < g_smallAllocationZoneMetadata.maxAllocationSizeInBytes) {

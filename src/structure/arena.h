@@ -25,11 +25,11 @@
 */
 typedef struct Arena_s
 {
-	ZoneHeader*		smallZones; /*!< @brief Points to the first zone, Null if no zones exist yet. */
-	ZoneHeader*		mediumZones; /*!< @brief Points to the first zone, Null if no zones exist yet. */
-	void*			huge_allocations; /*!< @brief (binary tree?) of huge allocations (not contained in zones). */
-	uint64_t		capacity; /*!< @brief Capacity in bytes. */
-	uint64_t		size; /*!< @brief Used size in bytes. */    
+	ZoneHeader*		smallZones; /*!< Points to the first zone, Null if no zones exist yet. */
+	ZoneHeader*		mediumZones; /*!< Points to the first zone, Null if no zones exist yet. */
+	void*			huge_allocations; /*!< (binary tree?) of huge allocations (not contained in zones). */
+	uint64_t		capacity; /*!< Capacity in bytes. */
+	uint64_t		size; /*!< Used size in bytes. */    
 } Arena;
 
 /*!

@@ -12,20 +12,12 @@
 /*                                                                              */
 /* **************************************************************************** */
 
-#include "kmalloc/kmalloc.h"
-#include "structure/arena.h"
-#include "pre_preprocessor/generated_kmalloc_metadata.h"
-#include "debug_assert.h"
+#pragma once
 
-#include <unistd.h>
+#include <assert.h>
 
-void* km_malloc(size_t size)
-{
-	// No need to initialize since statics will be zero initialised by default.
-	static Arena arenas[KMALLOC_NUMBER_OF_CORES];
-
-	const size_t arenaIndex = get_thread_arena_index(KMALLOC_NUMBER_OF_CORES);
-	D_ASSERT(arenaIndex < KMALLOC_NUMBER_OF_CORES);
-
-	return (allocate_in_arena(&arenas[arenaIndex], size));
-}
+#ifdef DEBUG
+# define D_ASSERT(x) assert(x)
+#else
+# define D_ASSERT(x)
+#endif

@@ -14,6 +14,7 @@
 
 #include "zone.h"
 #include "allocation.h"
+#include "../debug_assert.h"
 
 #include <libkm/memory.h>
 #include <libkm/math.h>
@@ -21,7 +22,6 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include <stdio.h>
-#include <assert.h>
 
 const ZoneMetadata g_smallAllocationZoneMetadata = {
     .minAllocationSizeInBytes	= SMALL_ALLOCATION_MIN_ALLOCATION_SIZE_BYTES,
@@ -57,6 +57,7 @@ static void set_bitmap_occupied(ZoneHeader* zone, size_t startingBlock, size_t a
 		const size_t bitToMark = 1 << (i % BITS_IN_INTEGER);
 		zone->blockBitmap[i / BITS_IN_INTEGER] |= bitToMark;
 	}
+	zone->freeBlocks -= allocationSizeInBlocks;
 }
 
 ZoneHeader* create_zone(const ZoneMetadata* zoneMetadata)
@@ -71,6 +72,7 @@ ZoneHeader* create_zone(const ZoneMetadata* zoneMetadata)
 	ZoneHeader* header = data;
 	header->start = header_boundary_zone_start;
 	header->metadata = zoneMetadata;
+	header->freeBlocks = zoneMetadata->bitmapSize; // size of bitmap has a 1:1 correlation with the amount of blocks in a zone. 
 	header->nextZone = NULL;
 	header->end = header_boundary_zone_end;
 
@@ -88,8 +90,9 @@ void destroy_zone(ZoneHeader* zone)
 	zone->nextZone = NULL;
 	zone->end = 0;
 
-	int ret = munmap(zone, zoneData->zoneSizeInPages * PAGE_SIZE);
-	assert(ret != -1); // Can only fail if zone is an invalid address.
+	const int ret = munmap(zone, zoneData->zoneSizeInPages * PAGE_SIZE);
+	D_ASSERT(ret != -1); // Can only fail if zone is an invalid address.
+	(void)ret;
 }
 
 size_t get_allocation_block_in_zone(const ZoneHeader* zone, size_t allocationSizeInBlocks)
