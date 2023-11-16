@@ -48,10 +48,8 @@ void simpleZoneTest()
 int main()
 {
     // simpleZoneTest();
-	km_malloc(16);
-	km_malloc(512);
-	km_malloc(16);
-	km_malloc(512);
+	void* var = km_malloc(16);
+	km_free(var);
 
 
 	return 0;
