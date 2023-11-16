@@ -9,7 +9,6 @@ static void TestAllocationSameSizeImpl(const std::string& topic, bool isOriginal
 	for (size_t i = 0; i < repeatAmount; i++) {
 		(void)allocator(allocationSize);
 	}
-
 }
 static void TestAllocationSameSize(const std::string& topic, size_t allocationSize, size_t repeatAmount)
 {

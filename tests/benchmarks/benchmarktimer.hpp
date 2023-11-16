@@ -5,6 +5,14 @@
 #include <chrono>
 #include <iostream>
 
+#define COLOR_LBLUE	 "\033[38;5;14m"
+#define COLOR_BLUE	 "\033[38;5;12m"
+#define COLOR_RED	 "\033[31m"
+#define COLOR_GREEN	 "\033[32m"
+#define COLOR_YELLOW "\033[38;5;11m"
+#define COLOR_RESET	 "\033[0m"
+
+
 /*
  * @brief not thread safe.
 */
@@ -15,7 +23,7 @@ class BenchmarkTimer
 
 	const std::string topic;
 	const bool isOriginal;
-	const std::__1::chrono::system_clock::time_point startTime;
+	const std::chrono::system_clock::time_point startTime;
 	bool stopped;
 
 public:
@@ -49,9 +57,9 @@ public:
 	static void Print()
 	{
 		for (const auto& [topic, kmDuration] : kmTimeMap) {
-			std::cout << "[" << topic << "] took: \n"
-				"\t[km_malloc]" << kmDuration << "ms\n"
-				"\t[og_malloc]" << ogTimeMap.at(topic) << "ms\n\n";
+			std::cout << "[" COLOR_LBLUE << topic << COLOR_RESET "] took: \n"
+				"\t[" COLOR_BLUE "km_malloc" COLOR_RESET "]: " << kmDuration << "ms\n"
+				"\t[" COLOR_RED "og_malloc" COLOR_RESET "]: " << ogTimeMap.at(topic) << "ms\n\n";
 		}
 	}
 

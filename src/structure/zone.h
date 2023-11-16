@@ -44,6 +44,7 @@ typedef struct ZoneHeader_s
 {
 	HeaderBoundaries		start; /*!< Start of header. */
 	const ZoneMetadata*		metadata; /*!< -. */
+	uint32_t				freeBlocks; /*!< -. */
 	int						blockBitmap[BLOCK_BITMAP_SIZE_INTEGERS]; /*!< @brief bitmap to store which blocks are occupied */
 	struct ZoneHeader_s*	nextZone; /*!< -. */
 	HeaderBoundaries		end; /*!< @brief End of header. */

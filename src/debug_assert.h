@@ -12,9 +12,12 @@
 /*                                                                              */
 /* **************************************************************************** */
 
-#include "kmalloc/kmalloc.h"
+#pragma once
 
-void km_free(void* ptr)
-{
-	(void)ptr;
-}
+#include <assert.h>
+
+#ifdef DEBUG
+# define D_ASSERT(x) assert(x)
+#else
+# define D_ASSERT(x)
+#endif
