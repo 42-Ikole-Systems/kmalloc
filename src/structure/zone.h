@@ -16,6 +16,7 @@
 # define KMALLOC_ZONE_H
 
 #include "boundaries.h"
+#include "allocation.h"
 #include "sizeInfo.h"
 
 #include <inttypes.h>
@@ -61,11 +62,27 @@ typedef struct AllocationData_s
 } AllocationData;
 
 /*!
+ * @brief Two values the zone can contain. 
+*/
+typedef enum ZoneOccupationType_e
+{
+	free,
+	allocated
+} ZoneOccupationType;
+
+/*!
  * @brief Allocates memory from kernel and initialises the zoneheader.
  * @param zoneMetadata
  * @return
 */
 ZoneHeader* create_zone(const ZoneMetadata* zoneMetadata);
+
+/*!
+ * @brief Gets the ZoneHeader of the zone the allocaiton is contained in.
+ * @param allocation
+ * @return If ZoneHeader is NULL the allocaiton is not contained inside a zone.
+*/
+ZoneHeader* get_zone_header(AllocationHeader* allocation);
 
 /*!
  * @brief Deallocates and clears a zone.
@@ -96,5 +113,11 @@ void* allocate_in_zone(const AllocationData allocation);
 */
 uint16_t get_allocation_size_in_blocks(const ZoneMetadata* zoneMetadata, size_t allocationSizeInBytes);
 
+/*!
+ * @brief -.
+ * @param header
+ * @param allocation
+*/
+void free_from_zone(ZoneHeader* header, AllocationHeader* allocation);
 
 #endif

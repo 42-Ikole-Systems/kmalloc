@@ -12,32 +12,22 @@
 /*                                                                              */
 /* **************************************************************************** */
 
-#include "allocation.h"
+#include "kmalloc/kmalloc.h"
+#include "structure/zone.h"
+#include "structure/allocation.h"
+#include "debug_assert.h"
 
-#include <libkm/memory.h>
+#include <unistd.h>
 
-#include <stdlib.h>
-
-void set_allocation_header(void* address, uint16_t sizeInBlocks, uint16_t zoneOffsetper16Bytes)
+void km_free(void* ptr)
 {
-	AllocationHeader* header = (AllocationHeader*)address;
-	header->start = header_boundary_allocation_start;
-	header->sizeInBlocks = sizeInBlocks;
-	header->zoneOffsetper16Bytes = zoneOffsetper16Bytes;
-	header->end = header_boundary_allocation_end;
-}
+	AllocationHeader* allocation = get_allocation_header(ptr);
+	
+	// maybe a different header for large allocations.
+	assert(allocation != NULL);
 
-AllocationHeader* get_allocation_header(void* allocationAddress)
-{
-	AllocationHeader* header = (AllocationHeader*)(allocationAddress - sizeof(AllocationHeader));
-
-	if (header->start != header_boundary_allocation_start || header->end != header_boundary_allocation_end) {
-		return NULL;
-	}
-	return header;
-}
-
-void remove_allocation_header(AllocationHeader* header)
-{
-	km_bzero(header, sizeof(AllocationHeader));
+	ZoneHeader* zone = get_zone_header(allocation);
+	assert(zone != NULL);
+	free_from_zone(zone, allocation);
+	// remove zone if empty.
 }

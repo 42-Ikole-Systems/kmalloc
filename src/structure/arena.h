@@ -33,6 +33,19 @@ typedef struct Arena_s
 } Arena;
 
 /*!
+ * @brief -.
+ * @param idx
+ * @return
+*/
+Arena* get_arena_by_index(size_t idx);
+
+/*!
+ * @brief Gets the arena assigned to the thread.
+ * @return
+*/
+Arena* get_arena();
+
+/*!
  * @brief Gets the index for the arena assigned to the thread.
  * @param amountOfArenas -.
  * @returns
@@ -55,6 +68,5 @@ void* allocate_in_arena(Arena* arena, const size_t numberOfBytes);
  * @return
 */
 AllocationData get_allocation_data(ZoneHeader** zoneHead, const size_t allocationSizeInBytes, const ZoneMetadata* zoneMetadata);
-
 
 #endif

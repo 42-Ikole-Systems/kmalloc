@@ -16,6 +16,7 @@
 #include "allocation.h"
 #include "../debug_assert.h"
 
+#include <pre_preprocessor/generated_kmalloc_metadata.h>
 #include <libkm/math.h>
 
 #include <unistd.h>
@@ -25,6 +26,22 @@
 # include <sys/syscall.h>
 # include <sys/types.h>
 #endif
+
+Arena* get_arena_by_index(size_t idx)
+{
+	// No need to initialize since statics will be zero initialised by default.
+	static Arena arenas[KMALLOC_NUMBER_OF_CORES];
+	
+	D_ASSERT(idx < KMALLOC_NUMBER_OF_CORES);
+	
+	return &arenas[idx];
+}
+
+Arena* get_arena()
+{
+	const size_t arenaIndex = get_thread_arena_index(KMALLOC_NUMBER_OF_CORES);
+	return get_arena_by_index(arenaIndex);
+}
 
 size_t get_thread_arena_index(const size_t amountOfArenas)
 {

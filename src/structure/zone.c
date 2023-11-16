@@ -82,6 +82,16 @@ ZoneHeader* create_zone(const ZoneMetadata* zoneMetadata)
 	return data;
 }
 
+ZoneHeader* get_zone_header(AllocationHeader* allocation)
+{
+	ZoneHeader* header = (ZoneHeader*)(allocation - (allocation->zoneOffsetper16Bytes * 16));
+
+	if (header->start != header_boundary_zone_start || header->end != header_boundary_zone_end) {
+		return NULL;
+	}
+	return header;
+}
+
 void destroy_zone(ZoneHeader* zone)
 {
 	const ZoneMetadata* zoneData = zone->metadata;
@@ -124,7 +134,34 @@ void* allocate_in_zone(const AllocationData allocation)
 	set_bitmap_occupied(allocation.zone, allocation.firstBlockOfAllocation, allocation.allocationSizeInBlocks);
 
 	void* allocationAddress = (void*)allocation.zone + (allocation.firstBlockOfAllocation * (allocation.zone->metadata->minAllocationSizeInBytes));
-	set_allocation_header(allocationAddress, allocation.allocationSizeInBlocks);
+	const uint16_t stepsToZoneHead = ((intptr_t)allocationAddress - (intptr_t)allocation.zone) << 5; // divides by 16.
+	set_allocation_header(allocationAddress, allocation.allocationSizeInBlocks, allocation.firstBlockOfAllocation * stepsToZoneHead);
 
 	return allocationAddress + sizeof(AllocationHeader);
+}
+
+/*!
+ * @brief -.
+ * @param zone
+ * @param allocation
+*/
+static void clear_allocation_from_bitmap(ZoneHeader* zone, AllocationHeader* allocation)
+{
+	const size_t bitmapSize = zone->metadata->bitmapSize;
+	const size_t startingBlock = ((intptr_t)allocation - (intptr_t)zone) / zone->metadata->minAllocationSizeInBytes;
+
+	for (size_t i = startingBlock; i < bitmapSize && i < startingBlock + allocation->sizeInBlocks; i++)
+	{
+		const size_t bitToClear = 1 << (i % BITS_IN_INTEGER);
+		int bitmap = zone->blockBitmap[i / BITS_IN_INTEGER];
+		bitmap = bitmap & ~( 1 << bitToClear);
+
+	}
+	zone->freeBlocks += allocation->sizeInBlocks;
+}
+
+void free_from_zone(ZoneHeader* header, AllocationHeader* allocation)
+{
+	clear_allocation_from_bitmap(header, allocation);
+	km_memset(allocation, 0, sizeof(AllocationHeader));
 }

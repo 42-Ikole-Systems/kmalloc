@@ -2,6 +2,7 @@ ifndef SRC_MK
 SRC_MK = 1
 
 SRC := malloc.c \
+	   free.c \
 	   structure/arena.c \
 	   structure/zone.c \
 	   structure/allocation.c
