@@ -23,7 +23,7 @@ class BenchmarkTimer
 
 	const std::string topic;
 	const bool isOriginal;
-	const std::__1::chrono::system_clock::time_point startTime;
+	const std::chrono::system_clock::time_point startTime;
 	bool stopped;
 
 public:
