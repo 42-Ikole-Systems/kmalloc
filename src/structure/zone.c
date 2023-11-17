@@ -79,12 +79,12 @@ ZoneHeader* create_zone(const ZoneMetadata* zoneMetadata)
 	// Mark blocks containing zoneHeader as occupied in bitmap.
 	set_bitmap_occupied(header, 0, get_allocation_size_in_blocks(zoneMetadata, sizeof(ZoneHeader)));
 
-	return data;
+	return header;
 }
 
 ZoneHeader* get_zone_header(AllocationHeader* allocation)
 {
-	ZoneHeader* header = (ZoneHeader*)(allocation - (allocation->zoneOffsetper16Bytes * 16));
+	ZoneHeader* header = (ZoneHeader*)((void*)allocation - (allocation->zoneOffsetper16Bytes * 16));
 
 	if (header->start != header_boundary_zone_start || header->end != header_boundary_zone_end) {
 		return NULL;
@@ -134,8 +134,8 @@ void* allocate_in_zone(const AllocationData allocation)
 	set_bitmap_occupied(allocation.zone, allocation.firstBlockOfAllocation, allocation.allocationSizeInBlocks);
 
 	void* allocationAddress = (void*)allocation.zone + (allocation.firstBlockOfAllocation * (allocation.zone->metadata->minAllocationSizeInBytes));
-	const uint16_t stepsToZoneHead = ((intptr_t)allocationAddress - (intptr_t)allocation.zone) << 5; // divides by 16.
-	set_allocation_header(allocationAddress, allocation.allocationSizeInBlocks, allocation.firstBlockOfAllocation * stepsToZoneHead);
+	const uint16_t stepsToZoneHead = ((intptr_t)allocationAddress - (intptr_t)allocation.zone) >> 4; // divides by 16.
+	set_allocation_header(allocationAddress, allocation.allocationSizeInBlocks, stepsToZoneHead);
 
 	return allocationAddress + sizeof(AllocationHeader);
 }
@@ -150,12 +150,9 @@ static void clear_allocation_from_bitmap(ZoneHeader* zone, AllocationHeader* all
 	const size_t bitmapSize = zone->metadata->bitmapSize;
 	const size_t startingBlock = ((intptr_t)allocation - (intptr_t)zone) / zone->metadata->minAllocationSizeInBytes;
 
-	for (size_t i = startingBlock; i < bitmapSize && i < startingBlock + allocation->sizeInBlocks; i++)
+	for (size_t bitToClear = startingBlock; bitToClear < bitmapSize && bitToClear < startingBlock + allocation->sizeInBlocks; bitToClear++)
 	{
-		const size_t bitToClear = 1 << (i % BITS_IN_INTEGER);
-		int bitmap = zone->blockBitmap[i / BITS_IN_INTEGER];
-		bitmap = bitmap & ~( 1 << bitToClear);
-
+		zone->blockBitmap[bitToClear / BITS_IN_INTEGER] &= ~(1 << bitToClear);
 	}
 	zone->freeBlocks += allocation->sizeInBlocks;
 }

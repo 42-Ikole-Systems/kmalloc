@@ -62,15 +62,6 @@ typedef struct AllocationData_s
 } AllocationData;
 
 /*!
- * @brief Two values the zone can contain. 
-*/
-typedef enum ZoneOccupationType_e
-{
-	free,
-	allocated
-} ZoneOccupationType;
-
-/*!
  * @brief Allocates memory from kernel and initialises the zoneheader.
  * @param zoneMetadata
  * @return

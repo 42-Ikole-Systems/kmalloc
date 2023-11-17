@@ -18,16 +18,25 @@
 #include "debug_assert.h"
 
 #include <unistd.h>
+#include <stdlib.h>
 
 void km_free(void* ptr)
 {
+	if (ptr == NULL)
+	{
+		return;
+	}
+
+	// maybe a different header for large allocati`ons.
 	AllocationHeader* allocation = get_allocation_header(ptr);
-	
-	// maybe a different header for large allocations.
-	assert(allocation != NULL);
+	if (allocation == NULL) {
+		abort(); // Not a valid allocation header.
+	}
 
 	ZoneHeader* zone = get_zone_header(allocation);
-	assert(zone != NULL);
+	if (zone == NULL) {
+		abort(); // No zone header was found for allocation.
+	}
 	free_from_zone(zone, allocation);
 	// remove zone if empty.
 }
