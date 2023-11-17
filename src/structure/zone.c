@@ -60,7 +60,7 @@ static void set_bitmap_occupied(ZoneHeader* zone, size_t startingBlock, size_t a
 	zone->freeBlocks -= allocationSizeInBlocks;
 }
 
-ZoneHeader* create_zone(const ZoneMetadata* zoneMetadata)
+ZoneHeader* create_zone(const ZoneMetadata* zoneMetadata, size_t arenaIndex)
 {
 	// MAP_ANON so its not associated with any file.
 	// MAP_PRIVATE so a forked process will not share the memory but gets a dupliate.
@@ -73,6 +73,7 @@ ZoneHeader* create_zone(const ZoneMetadata* zoneMetadata)
 	header->start = header_boundary_zone_start;
 	header->metadata = zoneMetadata;
 	header->freeBlocks = zoneMetadata->bitmapSize; // size of bitmap has a 1:1 correlation with the amount of blocks in a zone. 
+	header->arenaIndex = 
 	header->nextZone = NULL;
 	header->end = header_boundary_zone_end;
 
