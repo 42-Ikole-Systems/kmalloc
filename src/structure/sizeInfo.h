@@ -17,8 +17,7 @@
 
 #include "boundaries.h"
 
-// Temproary define in future will be gotten from kernel.
-#define PAGE_SIZE 1024
+#include <pre_preprocessor/generated_kmalloc_metadata.h>
 
 #define BITS_IN_BYTE 8
 #define BITS_IN_INTEGER (sizeof(int) * BITS_IN_BYTE)

@@ -18,6 +18,7 @@
 #include "zone.h"
 #include "allocation.h"
 
+#include <pre_preprocessor/generated_kmalloc_metadata.h>
 #include <inttypes.h>
 
 /*!

@@ -49,6 +49,14 @@ static char* get_number_of_cores_macro()
 	return numberOfCoresDefineString;
 }
 
+static char* get_page_size_macro()
+{
+	const long pageSizeInBytes = sysconf(_SC_PAGE_SIZE);
+	char* pageSizeDefineString = NULL;
+	assert(km_sprintf(&pageSizeDefineString, "#define PAGE_SIZE %d\n", pageSizeInBytes) != -1);
+	return pageSizeDefineString;
+}
+
 /*!
  * @brief
  * @param fd
@@ -69,5 +77,6 @@ int main()
 
 	write_macro_to_file(fd, get_warning_message);
 	write_macro_to_file(fd, get_number_of_cores_macro);
+	write_macro_to_file(fd, get_page_size_macro);
 	close(fd);
 }
