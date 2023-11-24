@@ -76,7 +76,7 @@ Test(zone_test, zone_allocation)
 	cr_expect_neq(someZone, NULL);
 
 	// First bits is set to accomodate for zone header.
-	uint32_t bitsSetInBitmap = 0x0F; // 1111
+	int bitsSetInBitmap = 0x0F; // 1111
 	cr_expect_eq(someZone->blockBitmap[0], bitsSetInBitmap);
 
 	AllocationData allocationData = get_allocation_data(&someZone, 19, &g_smallAllocationZoneMetadata);
@@ -140,7 +140,7 @@ Test(zone_test, free_single_allocation)
 	cr_expect_neq(allocation, NULL);
 
 	free_from_zone(someZone, allocation);
-	uint32_t bitsSetInBitmap = 0x0F; // 1111
+	int bitsSetInBitmap = 0x0F; // 1111
 	cr_expect_eq(someZone->blockBitmap[0] & bitsSetInBitmap, bitsSetInBitmap);
 }
 
@@ -180,7 +180,7 @@ Test(zone_test, free_multiple)
 
 // start freeing
 	free_from_zone(someZone, get_allocation_header(alloc1)); // [0] 1111-1111 1111-1111 1111-1111 1100-1111 [1] 0000-0111 1111-1111
-	uint32_t bitsSetInBitmap = 0xFFFFFFCF;
+	int bitsSetInBitmap = 0xFFFFFFCF;
 	cr_expect_eq(someZone->blockBitmap[0], bitsSetInBitmap);
 	bitsSetInBitmap = 0x000007FF;
 	cr_expect_eq(someZone->blockBitmap[1], bitsSetInBitmap);
