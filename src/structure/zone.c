@@ -167,5 +167,6 @@ void free_from_zone(ZoneHeader* header, AllocationHeader* allocation)
 bool zone_is_empty(const ZoneHeader* zone)
 {
 	// Check if there is either nothing or only the zoneHeader is allocated.
-	return (zone->freeBlocks <= ((zone->metadata->zoneSizeInPages * PAGE_SIZE) / zone->metadata->minAllocationSizeInBytes) - get_allocation_size_in_blocks(zone->metadata, sizeof(ZoneHeader)));
+	const uint16_t maximumFreeBlocks = ((zone->metadata->zoneSizeInPages * PAGE_SIZE) / zone->metadata->minAllocationSizeInBytes) - get_allocation_size_in_blocks(zone->metadata, sizeof(ZoneHeader));
+	return (zone->freeBlocks == maximumFreeBlocks);
 }
