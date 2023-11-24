@@ -27,7 +27,7 @@ TestSuite(zone_test, .init=suitesetup, .fini=suiteteardown);
 Test(zone_test, create_zone)
 {
 	// small zone
-	someZone = create_zone(&g_smallAllocationZoneMetadata);
+	someZone = create_zone(&g_smallAllocationZoneMetadata, 0);
 	cr_expect_neq(someZone, NULL);
 	
 	cr_expect_eq(someZone->start, header_boundary_zone_start);
@@ -36,7 +36,7 @@ Test(zone_test, create_zone)
 	cr_expect_eq(someZone->end, header_boundary_zone_end);
 
 	// medium zone
-	someZone = create_zone(&g_mediumAllocationZoneMetadata);
+	someZone = create_zone(&g_mediumAllocationZoneMetadata, 0);
 	cr_expect(someZone != NULL);
 
 	cr_expect_eq(someZone->start, header_boundary_zone_start);
@@ -47,7 +47,7 @@ Test(zone_test, create_zone)
 
 Test(zone_test, destroy_zone, .signal=SIGSEGV)
 {
-	someZone = create_zone(&g_smallAllocationZoneMetadata);
+	someZone = create_zone(&g_smallAllocationZoneMetadata, 0);
 	cr_expect_neq(someZone, NULL);
 	
 	destroy_zone(someZone);
@@ -72,7 +72,7 @@ Test(zone_test, zone_allocation)
 	// THESE FOLLOWING TESTS ARE BASED ON DEFAULT SETTINGS, IF THEY ARE CHANGED TESTS MIGHT FAIL.
 	// ==========================================================================================
 
-	someZone = create_zone(&g_smallAllocationZoneMetadata);
+	someZone = create_zone(&g_smallAllocationZoneMetadata, 0);
 	cr_expect_neq(someZone, NULL);
 
 	// First bits is set to accomodate for zone header.
@@ -128,7 +128,7 @@ Test(zone_test, free_single_allocation)
 	// THESE FOLLOWING TESTS ARE BASED ON DEFAULT SETTINGS, IF THEY ARE CHANGED TESTS MIGHT FAIL.
 	// ==========================================================================================
 
-	someZone = create_zone(&g_smallAllocationZoneMetadata);
+	someZone = create_zone(&g_smallAllocationZoneMetadata, 0);
 	cr_expect_neq(someZone, NULL);
 
 	AllocationData allocationData = get_allocation_data(&someZone, 19, &g_smallAllocationZoneMetadata);
@@ -151,7 +151,7 @@ Test(zone_test, free_multiple)
 	// ==========================================================================================
 
 // create some allocations
-	someZone = create_zone(&g_smallAllocationZoneMetadata);
+	someZone = create_zone(&g_smallAllocationZoneMetadata, 0);
 	cr_expect_neq(someZone, NULL);
 
 	AllocationData allocationData = get_allocation_data(&someZone, 19, &g_smallAllocationZoneMetadata);

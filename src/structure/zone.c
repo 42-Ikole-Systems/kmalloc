@@ -73,7 +73,7 @@ ZoneHeader* create_zone(const ZoneMetadata* zoneMetadata, size_t arenaIndex)
 	header->start = header_boundary_zone_start;
 	header->metadata = zoneMetadata;
 	header->freeBlocks = zoneMetadata->bitmapSize; // size of bitmap has a 1:1 correlation with the amount of blocks in a zone. 
-	header->arenaIndex = 
+	header->arenaIndex = arenaIndex;
 	header->nextZone = NULL;
 	header->end = header_boundary_zone_end;
 
@@ -162,4 +162,10 @@ void free_from_zone(ZoneHeader* header, AllocationHeader* allocation)
 {
 	clear_allocation_from_bitmap(header, allocation);
 	km_memset(allocation, 0, sizeof(AllocationHeader));
+}
+
+bool zone_is_empty(const ZoneHeader* zone)
+{
+	// Check if there is either nothing or only the zoneHeader is allocated.
+	return (zone->freeBlocks <= ((zone->metadata->zoneSizeInPages * PAGE_SIZE) / zone->metadata->minAllocationSizeInBytes) - get_allocation_size_in_blocks(zone->metadata, sizeof(ZoneHeader)));
 }

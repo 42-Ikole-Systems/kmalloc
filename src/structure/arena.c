@@ -21,6 +21,9 @@
 
 #include <unistd.h>
 #include <pthread.h>
+#include <sys/mman.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #ifdef __linux__
 # include <sys/syscall.h>
@@ -43,7 +46,7 @@ Arena* get_arena()
 	return get_arena_by_index(arenaIndex);
 }
 
-size_t get_thread_arena_index(const size_t amountOfArenas)
+size_t get_thread_arena_index()
 {
 #ifdef __linux__
 	const pid_t threadId = syscall(SYS_gettid);
@@ -54,7 +57,7 @@ size_t get_thread_arena_index(const size_t amountOfArenas)
 # pramga message "Function not implemented for this platform."
 #endif
 
-	return threadId % amountOfArenas;
+	return threadId % KMALLOC_NUMBER_OF_CORES;
 }
 
 /*!
@@ -66,7 +69,7 @@ size_t get_thread_arena_index(const size_t amountOfArenas)
 */
 static ZoneHeader* add_new_zone(ZoneHeader** zoneHead, ZoneHeader* previousZone, const ZoneMetadata* zoneMetadata)
 {
-	ZoneHeader* newZone = create_zone(zoneMetadata);
+	ZoneHeader* newZone = create_zone(zoneMetadata, get_thread_arena_index());
 	if (newZone == NULL) {
 		return NULL;
 	}
@@ -139,4 +142,35 @@ void* allocate_in_arena(Arena* arena, const size_t allocationSizeInBytes)
 		arena->capacity -= allocationSizeInBytes;
 	}
 	return allocation;
+}
+
+void remove_zone_from_arena(Arena* arena, ZoneHeader* zoneToDelete)
+{
+	ZoneHeader** zonesToSearchHead = NULL;
+
+	if (zoneToDelete->metadata->minAllocationSizeInBytes == g_smallAllocationZoneMetadata.minAllocationSizeInBytes) {
+		zonesToSearchHead = &(arena->smallZones);
+	}
+	else {
+		zonesToSearchHead = &(arena->mediumZones);
+	}
+	
+	ZoneHeader* previousZone = NULL;
+	for (ZoneHeader* zone = *zonesToSearchHead; zone != NULL; zone = zone->nextZone) {
+		if (zone == zoneToDelete) {
+			if (previousZone == NULL) {
+				*zonesToSearchHead = zone->nextZone;
+			}
+			else {
+				previousZone->nextZone = zone->nextZone;
+			}
+			if (munmap(zone, zone->metadata->zoneSizeInPages * PAGE_SIZE) == -1) {
+				perror("unmapping zone: ");
+				abort();
+			}
+			return;
+		}
+		previousZone = zone;
+	}
+	assert("Zone was not deleted..." == NULL);
 }

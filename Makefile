@@ -85,18 +85,19 @@ benchmark: benchmark_build
 # Debugging
 debug: fclean
 	@echo "$(COLOR_YELLOW)Building $(NAME) debug... $(COLOR_RESET)"
-	@$(MAKE) debug -C $(LIBKM_LOCATION)
-	@$(MAKE) DEBUG=1
+	@$(MAKE) test DEBUG=1
 
 leaks: fclean
 	@echo "$(COLOR_YELLOW)Building $(NAME) leaks... $(COLOR_RESET)"
 	@$(MAKE) leaks -C $(LIBKM_LOCATION)
 	@$(MAKE) LEAKS=1
 
-fsanitize: fclean
+fsanitize: fclean $(LIBDIR)
 	@echo "$(COLOR_YELLOW)Building $(NAME) fsanitize... $(COLOR_RESET)"
 	@$(MAKE) fsanitize -C $(LIBKM_LOCATION)
-	@$(MAKE) FSANITIZE=1
+	@cp $(LIBKM) $(LIBDIR)/
+	@$(MAKE) fsanitize -C $(PRE_PREPROCESSOR_LOCATION)
+	@$(MAKE) test FSANITIZE=1
 
 # Phony
 .PHONY: debug fsanitize test clean fclean re $(LIBKM)

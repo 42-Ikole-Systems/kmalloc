@@ -14,11 +14,28 @@
 
 #include "kmalloc/kmalloc.h"
 #include "structure/zone.h"
+#include "structure/arena.h"
 #include "structure/allocation.h"
 #include "debug_assert.h"
 
 #include <unistd.h>
 #include <stdlib.h>
+
+void free_small_or_large(AllocationHeader* allocation)
+{
+	ZoneHeader* zone = get_zone_header(allocation);
+	if (zone == NULL) {
+		abort(); // No zone header was found for allocation.
+	}
+	Arena* arena = get_arena_by_index(zone->arenaIndex);
+	// lock mutex;
+
+	free_from_zone(zone, allocation);
+	
+	if (zone_is_empty(zone)) {
+		remove_zone_from_arena(arena, zone);
+	}
+}
 
 void km_free(void* ptr)
 {
@@ -27,16 +44,11 @@ void km_free(void* ptr)
 		return;
 	}
 
-	// maybe a different header for large allocati`ons.
 	AllocationHeader* allocation = get_allocation_header(ptr);
-	if (allocation == NULL) {
-		abort(); // Not a valid allocation header.
+	if (allocation != NULL) {
+		free_small_or_large(allocation);
 	}
-
-	ZoneHeader* zone = get_zone_header(allocation);
-	if (zone == NULL) {
-		abort(); // No zone header was found for allocation.
-	}
-	free_from_zone(zone, allocation);
-	// remove zone if empty.
+	// maybe a different header for large allocations.
+	
+	// abort(); // Not a valid allocation header.
 }

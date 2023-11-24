@@ -113,4 +113,11 @@ uint16_t get_allocation_size_in_blocks(const ZoneMetadata* zoneMetadata, size_t 
 */
 void free_from_zone(ZoneHeader* header, AllocationHeader* allocation);
 
+/*!
+ * @brief -.
+ * @param zone
+ * @return
+*/
+bool zone_is_empty(const ZoneHeader* zone);
+
 #endif

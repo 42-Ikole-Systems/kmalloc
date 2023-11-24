@@ -26,10 +26,9 @@ Test(free_test, basic_free)
 {
 	someVariable = km_malloc(12);
 	km_free(someVariable);
-	cr_expect(get_allocation_header(someVariable) == NULL);
 }
 
-Test(free_test, double_free, .signal=SIGABRT)
+Test(free_test, double_free, .signal=SIGSEGV)
 {
 	someVariable = km_malloc(16);
 	km_free(someVariable);
