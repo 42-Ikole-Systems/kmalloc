@@ -16,6 +16,7 @@
 # define KMALLOC_ZONE_H
 
 #include "boundaries.h"
+#include "allocation.h"
 #include "sizeInfo.h"
 
 #include <inttypes.h>
@@ -44,7 +45,8 @@ typedef struct ZoneHeader_s
 {
 	HeaderBoundaries		start; /*!< Start of header. */
 	const ZoneMetadata*		metadata; /*!< -. */
-	uint32_t				freeBlocks; /*!< -. */
+	uint16_t				freeBlocks; /*!< -. */
+	uint16_t				arenaIndex; /*!< Index of the arena the zone is contained in. */
 	int						blockBitmap[BLOCK_BITMAP_SIZE_INTEGERS]; /*!< @brief bitmap to store which blocks are occupied */
 	struct ZoneHeader_s*	nextZone; /*!< -. */
 	HeaderBoundaries		end; /*!< @brief End of header. */
@@ -63,9 +65,17 @@ typedef struct AllocationData_s
 /*!
  * @brief Allocates memory from kernel and initialises the zoneheader.
  * @param zoneMetadata
+ * @param arenaIndex
  * @return
 */
-ZoneHeader* create_zone(const ZoneMetadata* zoneMetadata);
+ZoneHeader* create_zone(const ZoneMetadata* zoneMetadata, size_t arenaIndex);
+
+/*!
+ * @brief Gets the ZoneHeader of the zone the allocaiton is contained in.
+ * @param allocation
+ * @return If ZoneHeader is NULL the allocaiton is not contained inside a zone.
+*/
+ZoneHeader* get_zone_header(AllocationHeader* allocation);
 
 /*!
  * @brief Deallocates and clears a zone.
@@ -96,5 +106,18 @@ void* allocate_in_zone(const AllocationData allocation);
 */
 uint16_t get_allocation_size_in_blocks(const ZoneMetadata* zoneMetadata, size_t allocationSizeInBytes);
 
+/*!
+ * @brief -.
+ * @param header
+ * @param allocation
+*/
+void free_from_zone(ZoneHeader* header, AllocationHeader* allocation);
+
+/*!
+ * @brief -.
+ * @param zone
+ * @return
+*/
+bool zone_is_empty(const ZoneHeader* zone);
 
 #endif

@@ -12,32 +12,43 @@
 /*                                                                              */
 /* **************************************************************************** */
 
-#include "allocation.h"
+#include "kmalloc/kmalloc.h"
+#include "structure/zone.h"
+#include "structure/arena.h"
+#include "structure/allocation.h"
+#include "debug_assert.h"
 
-#include <libkm/memory.h>
-
+#include <unistd.h>
 #include <stdlib.h>
 
-void set_allocation_header(void* address, uint16_t sizeInBlocks, uint16_t zoneOffsetper16Bytes)
+void free_small_or_large(AllocationHeader* allocation)
 {
-	AllocationHeader* header = (AllocationHeader*)address;
-	header->start = header_boundary_allocation_start;
-	header->sizeInBlocks = sizeInBlocks;
-	header->zoneOffsetper16Bytes = zoneOffsetper16Bytes;
-	header->end = header_boundary_allocation_end;
-}
-
-AllocationHeader* get_allocation_header(void* allocationAddress)
-{
-	AllocationHeader* header = (AllocationHeader*)(allocationAddress - sizeof(AllocationHeader));
-
-	if (header->start != header_boundary_allocation_start || header->end != header_boundary_allocation_end) {
-		return NULL;
+	ZoneHeader* zone = get_zone_header(allocation);
+	if (zone == NULL) {
+		abort(); // No zone header was found for allocation.
 	}
-	return header;
+	Arena* arena = get_arena_by_index(zone->arenaIndex);
+	// lock mutex;
+
+	free_from_zone(zone, allocation);
+	
+	if (zone_is_empty(zone)) {
+		remove_zone_from_arena(arena, zone);
+	}
 }
 
-void remove_allocation_header(AllocationHeader* header)
+void km_free(void* ptr)
 {
-	km_bzero(header, sizeof(AllocationHeader));
+	if (ptr == NULL)
+	{
+		return;
+	}
+
+	AllocationHeader* allocation = get_allocation_header(ptr);
+	if (allocation != NULL) {
+		free_small_or_large(allocation);
+	}
+	// maybe a different header for large allocations.
+	
+	// abort(); // Not a valid allocation header.
 }

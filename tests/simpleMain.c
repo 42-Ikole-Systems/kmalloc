@@ -8,7 +8,7 @@
 void simpleZoneTest()
 {
 	km_printf("small bitmapSize bits: %d, sizeInIntegers: %d\n", SMALL_BLOCK_BITMAP_SIZE_BITS, BLOCK_BITMAP_SIZE_INTEGERS);
-    ZoneHeader* someZone = create_zone(&g_smallAllocationZoneMetadata);
+    ZoneHeader* someZone = create_zone(&g_smallAllocationZoneMetadata, 0);
     if (someZone == NULL) {
         return ;
     }
@@ -48,11 +48,8 @@ void simpleZoneTest()
 int main()
 {
     // simpleZoneTest();
-	km_malloc(16);
-	km_malloc(512);
-	km_malloc(16);
-	km_malloc(512);
-
+	void* var = km_malloc(12);
+	km_free(var);
 
 	return 0;
 }

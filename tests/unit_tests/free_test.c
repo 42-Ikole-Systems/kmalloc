@@ -1,7 +1,10 @@
 
 #include "kmalloc/kmalloc.h"
+#include "structure/allocation.h"
 
 #include <criterion/criterion.h>
+
+#include <signal.h>
 
 #define TEST_SIZE 1024
 
@@ -19,8 +22,22 @@ void suiteteardown(void)
 
 TestSuite(free_test, .init=suitesetup, .fini=suiteteardown);
 
-Test(free_test, some_test)
+Test(free_test, basic_free)
 {
+	someVariable = km_malloc(12);
 	km_free(someVariable);
-	cr_expect(someVariable == NULL);
 }
+
+Test(free_test, double_free, .signal=SIGSEGV)
+{
+	someVariable = km_malloc(16);
+	km_free(someVariable);
+	km_free(someVariable);
+}
+
+Test(free_test, NULL_FREE)
+{
+	km_free(NULL);
+}
+
+

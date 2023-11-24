@@ -24,17 +24,19 @@
 */
 typedef struct AllocationHeader_s
 {
-    HeaderBoundaries start : 8; /*!< -. */
-    uint16_t		 sizeInBlocks : 16; /*!< -. */
-    HeaderBoundaries end : 8; /*!< -. */
+    HeaderBoundaries start : 3; /*!< -. */
+    uint16_t		 sizeInBlocks : 13; /*!< -. */
+	uint16_t		 zoneOffsetper16Bytes : 13; /*!< Amount of 16byte steps it takes to get back to the zone header. */
+    HeaderBoundaries end : 3; /*!< -. */
 } AllocationHeader;
 
 /*!
  * @brief Sets allocation header at address.
  * @param address
  * @param sizeInBlocks Size of the allocation.
+ * @param zoneOffsetper16Bytes Amount of 16byte steps it takes to get back to the zone header.
 */
-void set_allocation_header(void* address, uint16_t sizeInBlocks);
+void set_allocation_header(void* address, uint16_t sizeInBlocks, uint16_t zoneOffsetper16Bytes);
 
 /*!
  * @brief Gets allocation header.

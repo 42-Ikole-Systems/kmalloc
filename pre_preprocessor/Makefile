@@ -7,6 +7,11 @@ OBJ := $(addprefix $(ODIR)/, $(SRC:.c=.o))
 GENERATED_DIR = generated_includes/pre_preprocessor
 GENERATED_FILENAME = $(GENERATED_DIR)/generated_kmalloc_metadata.h
 CFLAGS = -Wall -Wextra -Werror
+
+ifdef FSANITIZE
+	CFLAGS += -g -fsanitize=address
+endif
+
 PRE_PROCESSOR_DEFINITIONS = -D KM_GENERATED_FILENAME=\"$(GENERATED_FILENAME)\"
 
 # libraries
@@ -28,17 +33,22 @@ $(OBJ): $(ODIR)/%.o: $(SDIR)/%.c
 
 $(NAME): $(LIBKM) $(OBJ)
 	@echo Building metadata generator...
-	@$(CC) -o $(NAME) $(OBJ) -L$(LIBDIR) -l$(LIBKM_NAME)
+	@$(CC) -o $(NAME) $(CFLAGS) $(OBJ) -L$(LIBDIR) -l$(LIBKM_NAME)
 
 $(GENERATED_DIR):
 	@mkdir -p $(GENERATED_DIR)
-
 
 $(GENERATED_FILENAME): $(NAME) $(GENERATED_DIR)
 	@echo Generating $(GENERATED_FILENAME)
 	@./$(NAME)
 
 run: $(GENERATED_FILENAME)
+
+# debug
+
+fsanitize: fclean
+	@echo pauper fsanitize build
+	@$(MAKE) run FSANITIZE=1
 
 # Cleanup
 clean:

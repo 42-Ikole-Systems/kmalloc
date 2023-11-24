@@ -33,11 +33,23 @@ typedef struct Arena_s
 } Arena;
 
 /*!
+ * @brief -.
+ * @param idx
+ * @return
+*/
+Arena* get_arena_by_index(size_t idx);
+
+/*!
+ * @brief Gets the arena assigned to the thread.
+ * @return
+*/
+Arena* get_arena();
+
+/*!
  * @brief Gets the index for the arena assigned to the thread.
- * @param amountOfArenas -.
  * @returns
 */
-size_t get_thread_arena_index(const size_t amountOfArenas);
+size_t get_thread_arena_index();
 
 /*!
  * @brief Creates an allocation within arena.
@@ -56,5 +68,11 @@ void* allocate_in_arena(Arena* arena, const size_t numberOfBytes);
 */
 AllocationData get_allocation_data(ZoneHeader** zoneHead, const size_t allocationSizeInBytes, const ZoneMetadata* zoneMetadata);
 
+/*!
+ * @brief Deallocates and removes zone from arena.
+ * @param arena
+ * @param zoneToDelete
+*/
+void remove_zone_from_arena(Arena* arena, ZoneHeader* zoneToDelete);
 
 #endif
