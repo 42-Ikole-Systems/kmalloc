@@ -58,8 +58,8 @@ public:
 	{
 		for (const auto& [topic, kmDuration] : kmTimeMap) {
 			std::cout << "[" COLOR_LBLUE << topic << COLOR_RESET "] took: \n"
-				"\t[" COLOR_BLUE "km_malloc" COLOR_RESET "]: " << kmDuration << "ms\n"
-				"\t[" COLOR_RED "og_malloc" COLOR_RESET "]: " << ogTimeMap.at(topic) << "ms\n\n";
+				"\t[" COLOR_BLUE "km" COLOR_RESET "]: " << kmDuration << "ms\n"
+				"\t[" COLOR_RED "og" COLOR_RESET "]: " << ogTimeMap.at(topic) << "ms\n\n";
 		}
 	}
 

@@ -26,7 +26,7 @@ static void TestAllocationSameSize(const std::string& topic, size_t allocationSi
 
 int main()
 {
-	TestAllocationSameSize("Allocating 32bytes 1048576 times", 32, 4096);
+	TestAllocationSameSize("freeing 32bytes 1048576 times", 32, 99999);
 
 	BenchmarkTimer::Print();
 }
