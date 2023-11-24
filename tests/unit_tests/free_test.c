@@ -25,7 +25,9 @@ TestSuite(free_test, .init=suitesetup, .fini=suiteteardown);
 Test(free_test, basic_free)
 {
 	someVariable = km_malloc(12);
+	void* anothervariable = km_malloc(21);
 	km_free(someVariable);
+	km_free(anothervariable);
 }
 
 Test(free_test, double_free, .signal=SIGSEGV)
